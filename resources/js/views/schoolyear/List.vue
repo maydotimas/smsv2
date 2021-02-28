@@ -26,14 +26,6 @@
           icon="el-icon-plus"
         >{{ $t('table.add') }}</el-button>
       </router-link>
-      <el-button
-        v-waves
-        :loading="downloading"
-        class="filter-item"
-        type="primary"
-        icon="el-icon-download"
-        @click="handleDownload"
-      >Export</el-button>
     </div>
     <el-table v-loading="loading" :data="list" border fit highlight-current-row>
       <el-table-column align="center" label="#" width="80">
@@ -108,7 +100,7 @@
             size="small"
             icon="el-icon-delete"
             title="Delete"
-            @click="handleDelete(scope.row.id, scope.row.first_name);"
+            @click="handleDelete(scope.row.id, scope.row.name);"
           />
 
           <el-button

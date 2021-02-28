@@ -20,9 +20,11 @@ class SchoolYear extends Model
     ];
 
     public function scopeSearch($query,$keyword){
-        return $query->where('name','like',$keyword.'%')
-            ->orWhere('description','like',$keyword.'%')
-            ->orWhere('school_year','like',$keyword.'%');
+        return $query->where('name','like','%'.$keyword.'%')
+            ->orWhere('description','like','%'.$keyword.'%');
+    }
+    public function scopeActive($query,$keyword){
+        return $query->where('status','=',$keyword);
     }
 
     public function department_fees()

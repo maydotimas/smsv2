@@ -22,13 +22,23 @@ class SchoolYearController extends BaseController
         if ($request->has('title') && $request->input('title') != '') {
             $data = SchoolYear::search($request->title);
 
-            if ($request->input('type') == 'All') {
-                $data = $data->withTrashed();
-            } else if ($request->input('type') == 'Trashed') {
-                $data = $data->onlyTrashed();
+            if ($request->input('type') == 'Active') {
+                $data = $data->active(1);
+            } else if ($request->input('type') == 'Inactive') {
+                $data = $data->active(0);
             }
 
             $data = $data->paginate($request->limit);
+        }
+        else if ($request->has('type') && $request->input('type') != '') {
+            if ($request->input('type') == 'Active') {
+                $data = SchoolYear::active(1)->paginate($request->limit);
+            } else if ($request->input('type') == 'Inactive') {
+                $data = SchoolYear::active(0)->paginate($request->limit);
+            } else {
+                $data = SchoolYear::paginate($request->limit);
+            }
+
         }
         else if ($request->has('year') && $request->input('year') != '') {
             if ($request->input('is_edit') === 'true'){
@@ -287,15 +297,16 @@ class SchoolYearController extends BaseController
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Laravue\Models\SchoolYear  $schoolYear
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(SchoolYear $schoolYear)
+    public function destroy($id)
     {
-        //
+        try {
+            $schoolYear = SchoolYear::where('id','=', $id);
+            $schoolYear->delete();
+        } catch (\Exception $ex) {
+            response()->json(['error' => $ex->getMessage()], 403);
+        }
+
+        return response()->json(null, 204);
     }
 
     public function lock(Request $request, $id){
