@@ -18,6 +18,8 @@ import Layout from '@/layout';
 // import chartsRoutes from './modules/charts';
 // import tableRoutes from './modules/table';
 import adminRoutes from './modules/admin';
+import schoolYearRoutes from './modules/schoolyear';
+import studentRoutes from './modules/students';
 // import nestedRoutes from './modules/nested';
 import errorRoutes from './modules/error';
 // import excelRoutes from './modules/excel';
@@ -119,86 +121,6 @@ export const constantRoutes = [
       },
     ],
   },
-  /* Students */
-  {
-    path: '/student',
-    component: Layout,
-    redirect: '/student',
-    meta: {
-      title: 'students',
-      icon: 'user',
-      permissions: ['view menu student'],
-    },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/students/List'),
-        name: 'Students',
-        meta: { title: 'students', icon: 'user', noCache: true },
-      },
-      {
-        hidden: true,
-        path: 'new',
-        component: () => import('@/views/students/New'),
-        name: 'AddNewStudent',
-        meta: { title: 'newstudent', icon: 'user', noCache: true },
-      },
-      {
-        hidden: true,
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/students/Edit'),
-        name: 'EditStudent',
-        meta: { title: 'editstudent', icon: 'user', noCache: true },
-      },
-      {
-        hidden: true,
-        path: 'view/:id(\\d+)',
-        component: () => import('@/views/students/SelfProfile'),
-        name: 'ViewStudentDetails',
-        meta: { title: 'viewstudent', icon: 'user', noCache: true },
-      },
-    ],
-  },
-  /* School Year Configuration */
-  {
-    path: '/schoolyear',
-    component: Layout,
-    redirect: '/schoolyear',
-    meta: {
-      title: 'schoolyears',
-      icon: 'user',
-      permissions: ['view menu schoolyear'],
-    },
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/schoolyear/List'),
-        name: 'SchoolYears',
-        meta: { title: 'schoolyears', icon: 'user', noCache: true },
-      },
-      {
-        hidden: true,
-        path: 'new',
-        component: () => import('@/views/schoolyear/New'),
-        name: 'AddNewSchoolYear',
-        meta: { title: 'newschoolyear', icon: 'user', noCache: true },
-      },
-      {
-        hidden: true,
-        path: 'edit/:id(\\d+)',
-        component: () => import('@/views/schoolyear/Edit'),
-        name: 'EditSchoolYearDetails',
-        meta: { title: 'editschoolyear', icon: 'user', noCache: true },
-      },
-      {
-        hidden: true,
-        path: 'view/:id(\\d+)',
-        component: () => import('@/views/students/SelfProfile'),
-        name: 'ViewStudentDetails',
-        meta: { title: 'viewstudent', icon: 'user', noCache: true },
-      },
-    ],
-  },
   {
     path: '/reservation',
     component: Layout,
@@ -247,7 +169,9 @@ export const asyncRoutes = [
   // chartsRoutes,
   // nestedRoutes,
   // tableRoutes,
+  studentRoutes,
   adminRoutes,
+  schoolYearRoutes,
   // {
   //   path: '/theme',
   //   component: Layout,

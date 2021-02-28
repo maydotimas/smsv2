@@ -1,12 +1,12 @@
 <template>
-  <div class="createPost-container">
+  <div v-if="user" class="createPost-container">
     <el-form
       ref="postForm"
       :model="user"
       class="form-container"
       readonly
     >
-      <div v-if="user.first_name" class="createPost-main-container">
+      <div v-if="user.last_name" class="createPost-main-container">
         <el-row>
           <el-col style="margin-bottom:2%;">
             <el-row>
@@ -163,7 +163,7 @@
           </el-col>
           <br>
           <el-col>
-            <el-row v-show="user.father">
+            <el-row v-if="user.father">
               <el-card class="box-card student-bio">
                 <div slot="header" class="clearfix">
                   <span>Father's Information</span>
@@ -230,7 +230,7 @@
               </el-card>
               <br>
             </el-row>
-            <el-row v-show="user.mother">
+            <el-row v-if="user.mother">
               <el-card class="box-card student-bio">
                 <div slot="header" class="clearfix">
                   <span>Mother's Information</span>
@@ -297,7 +297,7 @@
               </el-card>
               <br>
             </el-row>
-            <el-row v-show="user.guardian">
+            <el-row v-if="user.guardian">
               <el-card class="box-card student-bio">
                 <div slot="header" class="clearfix">
                   <span>Guardian's Information</span>
@@ -398,10 +398,51 @@ export default {
       type: Object,
       default: () => {
         return {
-          name: '',
+          student_no: '',
+          lrn: '',
+          first_name: '',
+          middle_name: '',
+          last_name: '',
+          suffix: '',
+          nickname: '',
+          handedness: '',
+          religion: '',
+          brgy: '',
+          town: '',
+          province: '',
           email: '',
+          mobile: '',
           avatar: '',
-          roles: [],
+          gender: '',
+          emergency: '',
+          birthdate: '',
+          student_type: 'Old Student',
+          family: [],
+          father_id: '',
+          father_first_name: '',
+          father_middle_name: '',
+          father_last_name: '',
+          father_mobile: '',
+          father_email: '',
+          father_occupation: '',
+          father_address: '',
+          mother_id: '',
+          mother_first_name: '',
+          mother_middle_name: '',
+          mother_last_name: '',
+          mother_mobile: '',
+          mother_email: '',
+          mother_occupation: '',
+          mother_address: '',
+          guardian_id: '',
+          guardian_first_name: '',
+          guardian_middle_name: '',
+          guardian_last_name: '',
+          guardian_mobile: '',
+          guardian_email: '',
+          guardian_occupation: '',
+          guardian_address: '',
+          relationship: '',
         };
       },
     },
@@ -457,6 +498,9 @@ export default {
       },
     };
   },
+  created(){
+    //
+  },
   methods: {
     checkIfApplicableFamilyContact(type) {
       if (type === 'None' && this.student.family.length === 0) {
@@ -496,7 +540,7 @@ export default {
 .createPost-container {
   position: relative;
   .createPost-main-container {
-    padding: 0 45px 20px 50px;
+    padding: 0 2% 3% 2%;
     .postInfo-container {
       position: relative;
       @include clearfix;

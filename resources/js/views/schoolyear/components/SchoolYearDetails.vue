@@ -1,36 +1,34 @@
 <template>
-  <view-student :user="user" />
+  <view-school-year-details :sy="school_year" />
 </template>
 
 <script>
 import Resource from '@/api/resource';
-const userResource = new Resource('users');
-import ViewStudent from './ViewStudent';
+const schoolYearResource = new Resource('schoolyears');
+import ViewSchoolYearDetails from './ViewSchoolYearDetails';
 
 export default {
-  components: { ViewStudent },
+  components: { ViewSchoolYearDetails },
   props: {
-    user: {
+    school_year: {
       type: Object,
       default: () => {
         return {
-          name: '',
-          email: '',
-          avatar: '',
-          roles: [],
+        id: '',
+        name: '',
+        description: '',
+        start: '',
+        end: '',
+        year: '',
+        fee: [],
+        department_fees: [],
+        family: [],
         };
       },
     },
   },
   data() {
     return {
-      activeActivity: 'first',
-      carouselImages: [
-        'https://cdn.laravue.dev/photo1.png',
-        'https://cdn.laravue.dev/photo2.png',
-        'https://cdn.laravue.dev/photo3.jpg',
-        'https://cdn.laravue.dev/photo4.jpg',
-      ],
       updating: false,
     };
   },
@@ -40,7 +38,7 @@ export default {
     },
     onSubmit() {
       this.updating = true;
-      userResource
+      schoolYearResource
         .update(this.user.id, this.user)
         .then(response => {
           this.updating = false;

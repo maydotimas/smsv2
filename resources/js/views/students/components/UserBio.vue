@@ -1,5 +1,5 @@
 <template>
-  <el-card class="box-card user-bio">
+  <el-card v-if="user.last_name" class="box-card user-bio">
     <div slot="header" class="clearfix">
       <span>My Emergency Contact</span>
     </div>

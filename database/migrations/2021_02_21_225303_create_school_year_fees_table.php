@@ -17,8 +17,8 @@ class CreateSchoolYearFeesTable extends Migration
             $table->id();
             /*payment detail*/
             $table->enum('type',['ANNUAL','SEMESTRAL','QUARTERLY','MONTHLY']);
-            $table->unsignedBigInteger('total_tuition_fee')->default(0);
-            $table->unsignedBigInteger('total_misc_fee')->default(0);
+            $table->unsignedDouble('total_tuition_fee')->default(0);
+            $table->unsignedDouble('total_misc_fee')->default(0);
             $table->unsignedDouble('enrollment_tuition_fee')->default(0);
             $table->unsignedDouble('enrollment_misc_fee')->default(0);
             $table->unsignedDouble('monthly_tuition_fee')->default(0);

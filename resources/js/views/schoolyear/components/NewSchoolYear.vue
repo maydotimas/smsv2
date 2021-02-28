@@ -161,9 +161,9 @@
             <el-row v-for="(fee, index) in departments" v-show="checkIfApplicable(fee.name)" :key="index">
               <el-card class="box-card user-bio">
                 <div slot="header" class="clearfix">
-                  <span>{{ fee.name }} Tuition Fee</span>
+                  <span>{{ fee.name }} Tuition Fee </span>
                 </div>
-                <div class="postInfo-container">
+                <div v-if="schoolyear.department_fees[index]" class="postInfo-container">
                   <!-- Annual -->
                   <el-col :span="24" style="margin-bottom: 2%">
                     <el-card class="box-card user-bio">
@@ -701,21 +701,34 @@ export default {
     };
   },
   created(){
+    this.clearData();
     this.getDepartments();
     this.startDate();
     this.endDate();
   },
   methods: {
+    clearData() {
+      this.schoolyear = {
+        id: '',
+        name: '',
+        description: '',
+        start: '',
+        end: '',
+        year: '',
+        fee: [],
+        department_fees: [],
+        family: [],
+      };
+    },
     async getDepartments() {
       const { data } = await departmentResource.list({});
       // console.log(data);
       this.departments = data;
+      this.checkIfEdit();
       var x = 0;
       for (x = 0; x < data.length; x++) {
         this.getDepartmentFee(data[x].id).then(this.setDepartmentFee.bind(null, [data[x].id, data[x].name]));
       }
-      this.checkIfEdit();
-      // console.log(this.schoolyear);
     },
     // call back in saving data
     setDepartmentFee(deparment, data) {
@@ -725,7 +738,7 @@ export default {
         var department_fee = data;
         console.log(dept_name);
         console.log(data);
-        if ( department_fee.length > 0 ){
+        if (department_fee.length > 0){
           this.schoolyear.fee.push(dept_name);
           this.schoolyear.department_fees.push(
             {
@@ -829,63 +842,62 @@ export default {
         }
       } else {
         this.schoolyear.department_fees.push(
-        {
-          department_id: dept_id,
-          annual: {
+          {
             department_id: dept_id,
-            grade_id: '',
-            type: 'ANNUAL',
-            total_tuition_fee: '0',
-            total_misc_fee: '0',
-            enrollment_tuition_fee: '0',
-            enrollment_misc_fee: '0',
-            monthly_tuition_fee: '0',
-            monthly_misc_fee: '0',
-          },
-          semestral: {
-            department_id: dept_id,
-            grade_id: '',
-            type: 'SEMESTRAL',
-            total_tuition_fee: '0',
-            total_misc_fee: '0',
-            enrollment_tuition_fee: '0',
-            enrollment_misc_fee: '0',
-            monthly_tuition_fee: '0',
-            monthly_misc_fee: '0',
-          },
-          quarterly: {
-            department_id: dept_id,
-            grade_id: '',
-            type: 'QUARTERLY',
-            total_tuition_fee: '0',
-            total_misc_fee: '0',
-            enrollment_tuition_fee: '0',
-            enrollment_misc_fee: '0',
-            monthly_tuition_fee: '0',
-            monthly_misc_fee: '0',
-          },
-          monthly: {
-            department_id: dept_id,
-            grade_id: '',
-            type: 'MONTHLY',
-            total_tuition_fee: '0',
-            total_misc_fee: '0',
-            enrollment_tuition_fee: '0',
-            enrollment_misc_fee: '0',
-            monthly_tuition_fee: '0',
-            monthly_misc_fee: '0',
-          },
-        }
-      );
+            annual: {
+              department_id: dept_id,
+              grade_id: '',
+              type: 'ANNUAL',
+              total_tuition_fee: '0',
+              total_misc_fee: '0',
+              enrollment_tuition_fee: '0',
+              enrollment_misc_fee: '0',
+              monthly_tuition_fee: '0',
+              monthly_misc_fee: '0',
+            },
+            semestral: {
+              department_id: dept_id,
+              grade_id: '',
+              type: 'SEMESTRAL',
+              total_tuition_fee: '0',
+              total_misc_fee: '0',
+              enrollment_tuition_fee: '0',
+              enrollment_misc_fee: '0',
+              monthly_tuition_fee: '0',
+              monthly_misc_fee: '0',
+            },
+            quarterly: {
+              department_id: dept_id,
+              grade_id: '',
+              type: 'QUARTERLY',
+              total_tuition_fee: '0',
+              total_misc_fee: '0',
+              enrollment_tuition_fee: '0',
+              enrollment_misc_fee: '0',
+              monthly_tuition_fee: '0',
+              monthly_misc_fee: '0',
+            },
+            monthly: {
+              department_id: dept_id,
+              grade_id: '',
+              type: 'MONTHLY',
+              total_tuition_fee: '0',
+              total_misc_fee: '0',
+              enrollment_tuition_fee: '0',
+              enrollment_misc_fee: '0',
+              monthly_tuition_fee: '0',
+              monthly_misc_fee: '0',
+            },
+          }
+        );
       }
-      
     },
     setTuition(fee_fee){
       fee_fee.semestral.total_tuition_fee = parseFloat(fee_fee.annual.total_tuition_fee);
       fee_fee.quarterly.total_tuition_fee = parseFloat(fee_fee.annual.total_tuition_fee);
       fee_fee.monthly.total_tuition_fee = parseFloat(fee_fee.annual.total_tuition_fee);
       this.setTFMonthly(fee_fee.semestral, 1);
-      this.setTFMonthly(fee_fee.quarterly, 2);
+      this.setTFMonthly(fee_fee.quarterly, 3);
       this.setTFMonthly(fee_fee.monthly, 8);
     },
     setMisc(fee_fee){
@@ -893,11 +905,11 @@ export default {
       fee_fee.quarterly.total_misc_fee = parseFloat(fee_fee.annual.total_misc_fee);
       fee_fee.monthly.total_misc_fee = parseFloat(fee_fee.annual.total_misc_fee);
       this.setMiscMonthly(fee_fee.semestral, 1);
-      this.setMiscMonthly(fee_fee.quarterly, 2);
+      this.setMiscMonthly(fee_fee.quarterly, 3);
       this.setMiscMonthly(fee_fee.monthly, 8);
     },
     setTFMonthly(fee_fee, months){
-      if (fee_fee.enrollment_tuition_fee > fee_fee.total_tuition_fee){
+      if (parseFloat(fee_fee.enrollment_tuition_fee) > parseFloat(fee_fee.total_tuition_fee)){
         fee_fee.enrollment_tuition_fee = fee_fee.total_tuition_fee;
         fee_fee.monthly_tuition_fee = 0;
       } else {
@@ -905,7 +917,7 @@ export default {
       }
     },
     setMiscMonthly(fee_fee, months){
-      if (fee_fee.enrollment_misc_fee > fee_fee.total_misc_fee){
+      if (parseFloat(fee_fee.enrollment_misc_fee) > parseFloat(fee_fee.total_misc_fee)){
         fee_fee.enrollment_misc_fee = fee_fee.total_misc_fee;
         fee_fee.monthly_misc_fee = 0;
       } else {
@@ -984,12 +996,12 @@ export default {
     /* Check for duplicate school year details */
     async getDepartmentFee(department_id) {
       if (this.isEdit === true){
-        const { data } = await schoolYearResource.list({ 
-          school_year_id: this.sy.id, 
-          department: department_id
+        const { data } = await schoolYearResource.list({
+          school_year_id: this.sy.id,
+          department: department_id,
         });
         return data;
-      } 
+      }
       return false;
     },
     /* Check for duplicate school year details */
@@ -1059,7 +1071,7 @@ export default {
                       this.loading = false;
                     })
                     .catch((error) => {
-                      // console.log(error);
+                      console.log(error);
                     });
                 })
                 .catch(() => {
@@ -1096,7 +1108,7 @@ export default {
                       this.loading = false;
                     })
                     .catch((error) => {
-                      // console.log(error);
+                      console.log(error);
                     });
                 })
                 .catch(() => {

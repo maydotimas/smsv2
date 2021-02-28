@@ -77,6 +77,7 @@ export default {
     schoolyears: 'School Years',
     newschoolyear: 'New School Year',
     editschoolyear: 'Edit School Year',
+    viewschoolyear: 'View School Year',
     reservation: 'Reservations',
     enrollment: 'Enrollments',
   },

@@ -1,21 +1,18 @@
 <template>
   <el-card>
     <div class="user-profile">
-      <div class="user-avatar box-center">
-        <pan-thumb :image="user.avatar" :height="'100px'" :width="'100px'" :hoverable="false" />
-      </div>
       <div class="box-center">
         <div class="user-name text-center">
-          {{ user.nickname }}
+          {{ sy.name }}
         </div>
         <div class="user-role text-center text-muted">
-          {{ user.first_name }} {{ user.last_name }}
+          {{ sy.year }} - {{ sy.year + 1 }}
         </div>
       </div>
       <div class="user-follow">
-        <router-link :to="'/student/edit/'+user.id">
+        <router-link :to="'/schoolyear/edit/'+sy.id">
           <el-button type="primary" style="width: 100%;">
-            Edit Profile
+            Edit School Year
           </el-button>
         </router-link>
       </div>
@@ -24,12 +21,9 @@
 </template>
 
 <script>
-import PanThumb from '@/components/PanThumb';
-
 export default {
-  components: { PanThumb },
   props: {
-    user: {
+    sy: {
       type: Object,
       default: () => {
         return {

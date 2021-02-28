@@ -1,10 +1,10 @@
 <template>
-  <view-student :user="user" />
+  <view-student v-if="user" :user="user" />
 </template>
 
 <script>
-import Resource from '@/api/resource';
-const userResource = new Resource('users');
+// import Resource from '@/api/resource';
+// const userResource = new Resource('users');
 import ViewStudent from './ViewStudent';
 
 export default {
@@ -14,10 +14,51 @@ export default {
       type: Object,
       default: () => {
         return {
-          name: '',
+          student_no: '',
+          lrn: '',
+          first_name: '',
+          middle_name: '',
+          last_name: '',
+          suffix: '',
+          nickname: '',
+          handedness: '',
+          religion: '',
+          brgy: '',
+          town: '',
+          province: '',
           email: '',
+          mobile: '',
           avatar: '',
-          roles: [],
+          gender: '',
+          emergency: '',
+          birthdate: '',
+          student_type: 'Old Student',
+          family: [],
+          father_id: '',
+          father_first_name: '',
+          father_middle_name: '',
+          father_last_name: '',
+          father_mobile: '',
+          father_email: '',
+          father_occupation: '',
+          father_address: '',
+          mother_id: '',
+          mother_first_name: '',
+          mother_middle_name: '',
+          mother_last_name: '',
+          mother_mobile: '',
+          mother_email: '',
+          mother_occupation: '',
+          mother_address: '',
+          guardian_id: '',
+          guardian_first_name: '',
+          guardian_middle_name: '',
+          guardian_last_name: '',
+          guardian_mobile: '',
+          guardian_email: '',
+          guardian_occupation: '',
+          guardian_address: '',
+          relationship: '',
         };
       },
     },
@@ -33,28 +74,6 @@ export default {
       ],
       updating: false,
     };
-  },
-  methods: {
-    handleClick(tab, event) {
-      console.log('Switching tab ', tab, event);
-    },
-    onSubmit() {
-      this.updating = true;
-      userResource
-        .update(this.user.id, this.user)
-        .then(response => {
-          this.updating = false;
-          this.$message({
-            message: 'User information has been updated successfully',
-            type: 'success',
-            duration: 5 * 1000,
-          });
-        })
-        .catch(error => {
-          console.log(error);
-          this.updating = false;
-        });
-    },
   },
 };
 </script>

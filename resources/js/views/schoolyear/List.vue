@@ -125,7 +125,7 @@ import Pagination from '@/components/Pagination'; // Secondary package based on 
 const schoolYearResource = new Resource('schoolyears');
 
 export default {
-  name: 'SchoolYears',
+  name: 'SchoolYearList',
   components: { Pagination },
   directives: { permission, waves },
   filters: {

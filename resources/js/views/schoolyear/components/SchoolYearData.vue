@@ -1,60 +1,49 @@
 <template>
   <el-card class="box-card user-bio">
     <div slot="header" class="clearfix">
-      <span>My Emergency Contact</span>
+      <span>School Year Details</span>
     </div>
     <div class="user-education user-bio-section">
       <div class="user-bio-section-header">
         <svg-icon icon-class="people" />
-        <span>Name</span>
+        <span>Description</span>
       </div>
       <div class="user-bio-section-body">
         <div class="text-muted">
-          {{ getFullName(user.emergency) }}
+          {{ sy.description }}
         </div>
       </div>
     </div>
     <div class="user-education user-bio-section">
       <div class="user-bio-section-header">
         <svg-icon icon-class="role" />
-        <span>Mobile Number</span>
+        <span>Duration</span>
       </div>
       <div class="user-bio-section-body">
         <div class="text-muted">
-          {{ user.emergency.mobile }}
+          {{ sy.start }} to {{ sy.end }}
         </div>
       </div>
     </div>
     <div class="user-education user-bio-section">
       <div class="user-bio-section-header">
         <svg-icon icon-class="guide" />
-        <span>Email Address</span>
+        <span>No. Of Enrollees</span>
       </div>
       <div class="user-bio-section-body">
         <div class="text-muted">
-          {{ user.emergency.email }}
+          ###
         </div>
       </div>
     </div>
     <div class="user-education user-bio-section">
       <div class="user-bio-section-header">
-        <svg-icon icon-class="email" />
-        <span>Address</span>
+        <svg-icon icon-class="guide" />
+        <span>Status</span>
       </div>
       <div class="user-bio-section-body">
         <div class="text-muted">
-          {{ user.emergency.address }}
-        </div>
-      </div>
-    </div>
-    <div class="user-education user-bio-section">
-      <div class="user-bio-section-header">
-        <svg-icon icon-class="star" />
-        <span>Relationship to Student</span>
-      </div>
-      <div class="user-bio-section-body">
-        <div class="text-muted">
-          {{ user.emergency.type }}
+          {{ getStatus(sy.status) }}
         </div>
       </div>
     </div>
@@ -62,9 +51,10 @@
 </template>
 
 <script>
+
 export default {
   props: {
-    user: {
+    sy: {
       type: Object,
       default: () => {
         return {
@@ -81,18 +71,16 @@ export default {
       },
     },
   },
+  data(){
+    return {
+      //
+    };
+  },
+  created() {
+    //
+  },
   methods: {
-    getFullName(user){
-      var name = '';
-      name = user.last_name + ', ' + user.first_name;
-      if (user.suffix) {
-        name = name + ' ' + user.suffix;
-      }
-      if (user.middle_name){
-        name = name + ' ' + user.middle_name;
-      }
-      return name;
-    },
+    //
   },
 };
 </script>

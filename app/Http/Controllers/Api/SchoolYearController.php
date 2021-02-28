@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\SchoolYearResource;
+use App\Laravue\Model\Department;
 use App\Laravue\Models\SchoolYear;
 use App\Laravue\Models\SchoolYearFee;
 use Illuminate\Http\Request;
@@ -81,12 +82,13 @@ class SchoolYearController extends BaseController
      */
     public function store(Request $request)
     {
+//        return dd($request->all());
         // validate fields
         $validator = Validator::make(
             $request->all(),
             [
-                'year' => ['required', 'unique:school_years,year'],
-                'name' => ['required','unique:school_years,name'],
+//                'year' => ['required', 'unique:school_years,year'],
+//                'name' => ['required','unique:school_years,name'],
                 'description' => ['required'],
                 'start' => ['required'],
                 'end' => ['required'],
@@ -106,56 +108,60 @@ class SchoolYearController extends BaseController
                 'description' => $params['description'],
                 'status' => 0,
             ]);
-
-            // create school year department fees
-            $department_fees = $params['department_fees'];
-            foreach ($department_fees as $department_fee){
-                SchoolYearFee::create([
-                    'school_year_id' => $schoolyear->id,
-                    'department_id' => $department_fee['annual']['department_id'],
-                    'type' => 'ANNUAL',
-                    'total_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['annual']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['annual']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['annual']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['annual']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['annual']['monthly_misc_fee'],
-                ]);
-                SchoolYearFee::create([
-                    'school_year_id' => $schoolyear->id,
-                    'department_id' => $department_fee['semestral']['department_id'],
-                    'type' => 'SEMESTRAL',
-                    'total_tuition_fee' => $department_fee['semestral']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['semestral']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['semestral']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['semestral']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['semestral']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['semestral']['monthly_misc_fee'],
-                ]);
-                SchoolYearFee::create([
-                    'school_year_id' => $schoolyear->id,
-                    'department_id' => $department_fee['quarterly']['department_id'],
-                    'type' => 'QUARTERLY',
-                    'total_tuition_fee' => $department_fee['quarterly']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['quarterly']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['quarterly']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['quarterly']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['quarterly']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['quarterly']['monthly_misc_fee'],
-                ]);
-                SchoolYearFee::create([
-                    'school_year_id' => $schoolyear->id,
-                    'department_id' => $department_fee['monthly']['department_id'],
-                    'type' => 'MONTHLY',
-                    'total_tuition_fee' => $department_fee['monthly']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['monthly']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['monthly']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['monthly']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['monthly']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['monthly']['monthly_misc_fee'],
-                ]);
+            foreach($params['fee'] as $fee){
+                $department = Department::where('name','=',$fee)->get();
+                $department_id = $department[0]['id'];
+                // create school year department fees
+                $department_fees = $params['department_fees'];
+                foreach ($department_fees as $department_fee){
+                    if($department_fee['department_id'] === $department_id){
+                        SchoolYearFee::create([
+                            'school_year_id' => $schoolyear->id,
+                            'department_id' => $department_fee['annual']['department_id'],
+                            'type' => 'ANNUAL',
+                            'total_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['annual']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['annual']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['annual']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['annual']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['annual']['monthly_misc_fee'],
+                        ]);
+                        SchoolYearFee::create([
+                            'school_year_id' => $schoolyear->id,
+                            'department_id' => $department_fee['semestral']['department_id'],
+                            'type' => 'SEMESTRAL',
+                            'total_tuition_fee' => $department_fee['semestral']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['semestral']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['semestral']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['semestral']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['semestral']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['semestral']['monthly_misc_fee'],
+                        ]);
+                        SchoolYearFee::create([
+                            'school_year_id' => $schoolyear->id,
+                            'department_id' => $department_fee['quarterly']['department_id'],
+                            'type' => 'QUARTERLY',
+                            'total_tuition_fee' => $department_fee['quarterly']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['quarterly']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['quarterly']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['quarterly']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['quarterly']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['quarterly']['monthly_misc_fee'],
+                        ]);
+                        SchoolYearFee::create([
+                            'school_year_id' => $schoolyear->id,
+                            'department_id' => $department_fee['monthly']['department_id'],
+                            'type' => 'MONTHLY',
+                            'total_tuition_fee' => $department_fee['monthly']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['monthly']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['monthly']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['monthly']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['monthly']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['monthly']['monthly_misc_fee'],
+                        ]);
+                    }
+                }
             }
-
             return new SchoolYearResource($schoolyear);
         }
     }
@@ -222,52 +228,59 @@ class SchoolYearController extends BaseController
             // clear all school year department fees
             SchoolYearFee::where('school_year_id','=',$request->id)->delete();
 
-            $department_fees = $params['department_fees'];
-            foreach ($department_fees as $department_fee){
-                SchoolYearFee::create([
-                    'school_year_id' => $request->id,
-                    'department_id' => $department_fee['annual']['department_id'],
-                    'type' => 'ANNUAL',
-                    'total_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['annual']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['annual']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['annual']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['annual']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['annual']['monthly_misc_fee'],
-                ]);
-                SchoolYearFee::create([
-                    'school_year_id' => $request->id,
-                    'department_id' => $department_fee['semestral']['department_id'],
-                    'type' => 'SEMESTRAL',
-                    'total_tuition_fee' => $department_fee['semestral']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['semestral']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['semestral']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['semestral']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['semestral']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['semestral']['monthly_misc_fee'],
-                ]);
-                SchoolYearFee::create([
-                    'school_year_id' => $request->id,
-                    'department_id' => $department_fee['quarterly']['department_id'],
-                    'type' => 'QUARTERLY',
-                    'total_tuition_fee' => $department_fee['quarterly']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['quarterly']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['quarterly']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['quarterly']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['quarterly']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['quarterly']['monthly_misc_fee'],
-                ]);
-                SchoolYearFee::create([
-                    'school_year_id' => $request->id,
-                    'department_id' => $department_fee['monthly']['department_id'],
-                    'type' => 'MONTHLY',
-                    'total_tuition_fee' => $department_fee['monthly']['total_tuition_fee'],
-                    'total_misc_fee' => $department_fee['monthly']['total_misc_fee'],
-                    'enrollment_tuition_fee' => $department_fee['monthly']['enrollment_tuition_fee'],
-                    'enrollment_misc_fee' => $department_fee['monthly']['enrollment_misc_fee'],
-                    'monthly_tuition_fee' => $department_fee['monthly']['monthly_tuition_fee'],
-                    'monthly_misc_fee' => $department_fee['monthly']['monthly_misc_fee'],
-                ]);
+            foreach($params['fee'] as $fee){
+                $department = Department::where('name','=',$fee)->get();
+                $department_id = $department[0]['id'];
+                // create school year department fees
+                $department_fees = $params['department_fees'];
+                foreach ($department_fees as $department_fee){
+                    if($department_fee['department_id'] === $department_id){
+                        SchoolYearFee::create([
+                            'school_year_id' => $request->id,
+                            'department_id' => $department_fee['annual']['department_id'],
+                            'type' => 'ANNUAL',
+                            'total_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['annual']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['annual']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['annual']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['annual']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['annual']['monthly_misc_fee'],
+                        ]);
+                        SchoolYearFee::create([
+                            'school_year_id' => $request->id,
+                            'department_id' => $department_fee['semestral']['department_id'],
+                            'type' => 'SEMESTRAL',
+                            'total_tuition_fee' => $department_fee['semestral']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['semestral']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['semestral']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['semestral']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['semestral']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['semestral']['monthly_misc_fee'],
+                        ]);
+                        SchoolYearFee::create([
+                            'school_year_id' => $request->id,
+                            'department_id' => $department_fee['quarterly']['department_id'],
+                            'type' => 'QUARTERLY',
+                            'total_tuition_fee' => $department_fee['quarterly']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['quarterly']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['quarterly']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['quarterly']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['quarterly']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['quarterly']['monthly_misc_fee'],
+                        ]);
+                        SchoolYearFee::create([
+                            'school_year_id' => $request->id,
+                            'department_id' => $department_fee['monthly']['department_id'],
+                            'type' => 'MONTHLY',
+                            'total_tuition_fee' => $department_fee['monthly']['total_tuition_fee'],
+                            'total_misc_fee' => $department_fee['monthly']['total_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['monthly']['enrollment_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['monthly']['enrollment_misc_fee'],
+                            'monthly_tuition_fee' => $department_fee['monthly']['monthly_tuition_fee'],
+                            'monthly_misc_fee' => $department_fee['monthly']['monthly_misc_fee'],
+                        ]);
+                    }
+                }
             }
 
             return new SchoolYearResource($schoolYear);

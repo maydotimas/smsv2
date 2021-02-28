@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
-    <el-form v-if="user" :model="user">
-      <el-row :gutter="20">
+    <el-form v-if="is_loaded" :model="user">
+      <el-row>
         <el-col :span="6">
           <user-card :user="user" />
           <user-bio :user="user" />
@@ -26,9 +26,8 @@ export default {
   components: { UserBio, UserCard, UserActivity },
   data() {
     return {
-      user: {
-        avatar: 'uploads\\default.png',
-      },
+      user: false,
+      is_loaded: false,
     };
   },
   created() {
@@ -39,6 +38,8 @@ export default {
     async getUser(student_id) {
       const data = await studentResource.list({ id: student_id });
       this.user = data.data[0];
+      this.is_loaded = true;
+      console.log('aaaa');
       console.log(this.user);
     },
   },

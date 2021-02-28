@@ -12,10 +12,11 @@ class SchoolYearPermission extends Seeder
     public function run()
     {
         \App\Laravue\Models\Permission::findOrCreate('view schoolyear', 'api');
+        \App\Laravue\Models\Permission::findOrCreate('view menu schoolyear', 'api');
         \App\Laravue\Models\Permission::findOrCreate('manage schoolyear', 'api');
 
         // Assign new permissions to admin group
         $adminRole = App\Laravue\Models\Role::findByName(App\Laravue\Acl::ROLE_ADMIN);
-        $adminRole->givePermissionTo(['view schoolyear', 'manage schoolyear']);
+        $adminRole->givePermissionTo(['view schoolyear', 'view menu schoolyear', 'manage schoolyear']);
     }
 }
