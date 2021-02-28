@@ -16,6 +16,7 @@ class SchoolYear extends Model
         'start',
         'end',
         'status',
+        'is_locked',
     ];
 
     public function scopeSearch($query,$keyword){

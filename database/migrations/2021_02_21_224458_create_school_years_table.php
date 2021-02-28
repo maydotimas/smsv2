@@ -21,6 +21,7 @@ class CreateSchoolYearsTable extends Migration
             $table->string('start');
             $table->string('end');
             $table->unsignedBigInteger('status')->default(0);
+            $table->unsignedBigInteger('is_locked')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

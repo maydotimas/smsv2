@@ -47,6 +47,8 @@ Route::namespace('Api')->group(function() {
         /*School Year*/
         Route::apiResource('schoolyears', 'SchoolYearController')->middleware('permission:manage schoolyear');
         Route::get('schoolyears', 'SchoolYearController@index')->name('schoolyear.index')->middleware('permission:view schoolyear|manage schoolyear');/*School Year*/
+        Route::put('lock-sy/{id}', 'SchoolYearController@lock')->name('schoolyear.lock')->middleware('permission:view schoolyear|manage schoolyear');/*School Year*/
+        Route::put('status-sy/{id}', 'SchoolYearController@status')->name('schoolyear.status')->middleware('permission:view schoolyear|manage schoolyear');/*School Year*/
 
         /*Department*/
         Route::apiResource('departments', 'DepartmentController')->middleware('permission:manage department');

@@ -297,4 +297,24 @@ class SchoolYearController extends BaseController
     {
         //
     }
+
+    public function lock(Request $request, $id){
+        $sy = SchoolYear::find($id);
+        $data = SchoolYear::where('id','=',$id)
+            ->update([
+                'is_locked' => $request->lock_status,
+            ]);
+        return new SchoolYearResource($sy);
+    }
+    public function status(Request $request, $id){
+        $sy = SchoolYear::find($id);
+        SchoolYear::where('id','>',0)->update([
+                'status' => 0,
+            ]);
+        SchoolYear::where('id','=',$id)
+            ->update([
+                'status' => $request->active_status,
+            ]);
+        return new SchoolYearResource($sy);
+    }
 }

@@ -74,7 +74,15 @@
         </template>
       </el-table-column>
 
-      <el-table-column align="center" label="Actions" width="200">
+      <el-table-column label="Is Locked" class-name="status-col" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.is_locked | lockFilter">
+            {{ checkLock(row.is_locked) }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column align="center" label="Actions" width="300">
         <template slot-scope="scope">
           <router-link :to="'/schoolyear/view/'+scope.row.id">
             <el-button
@@ -102,6 +110,43 @@
             title="Delete"
             @click="handleDelete(scope.row.id, scope.row.first_name);"
           />
+
+          <el-button
+            v-if="scope.row.status === 0"
+            v-permission="['manage schoolyear']"
+            type="success"
+            size="small"
+            icon="el-icon-switch-button"
+            title="Activate"
+            @click="handleActivate(scope.row.id, scope.row.name, 1);"
+          />
+          <el-button
+            v-if="scope.row.status === 1"
+            v-permission="['manage schoolyear']"
+            type="warning"
+            size="small"
+            icon="el-icon-switch-button"
+            title="Deactivate"
+            @click="handleActivate(scope.row.id, scope.row.name, 0);"
+          />
+          <el-button
+            v-if="scope.row.is_locked === 0"
+            v-permission="['manage schoolyear']"
+            type="warning"
+            size="small"
+            icon="el-icon-lock"
+            title="Lock"
+            @click="handleLock(scope.row.id, scope.row.name, 1, scope.row);"
+          />
+          <el-button
+            v-if="scope.row.is_locked === 1"
+            v-permission="['manage schoolyear']"
+            type="success"
+            size="small"
+            icon="el-icon-lock"
+            title="Unlock"
+            @click="handleLock(scope.row.id, scope.row.name, 0, scope.row);"
+          />
         </template>
       </el-table-column>
     </el-table>
@@ -123,6 +168,8 @@ import waves from '@/directive/waves';
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 
 const schoolYearResource = new Resource('schoolyears');
+const lockSyResource = new Resource('lock-sy');
+const statusSyResource = new Resource('status-sy');
 
 export default {
   name: 'SchoolYearList',
@@ -130,6 +177,13 @@ export default {
   directives: { permission, waves },
   filters: {
     statusFilter(status) {
+      if (status === 0){
+        return 'danger';
+      } else {
+        return 'success';
+      }
+    },
+    lockFilter(status) {
       if (status !== 0){
         return 'danger';
       } else {
@@ -221,6 +275,96 @@ export default {
           });
       }
     },
+    handleLock(id, name, status, data) {
+      var message = '';
+      var stat = '';
+      if (status === 1) {
+        message = 'lock';
+        stat = 'locked';
+      } else {
+        message = 'unlock';
+        stat = 'unlocked';
+      }
+      this.$confirm(
+        'This will ' + message + ' ' + name + '. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          lockSyResource
+            .update(id, { lock_status: status })
+            .then((response) => {
+              this.$message({
+                message:
+                  'School Year ' +
+                  name +
+                  ' has been ' + stat + ' successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.getList();
+              this.loading = false;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Delete canceled',
+          });
+        });
+    },
+    handleActivate(id, name, status, data) {
+      var message = '';
+      var stat = '';
+      if (status === 0) {
+        message = 'deactivate';
+        stat = 'deactivated';
+      } else {
+        message = 'activate';
+        stat = 'activated';
+      }
+      this.$confirm(
+        'This will ' + message + ' ' + name + '. For activation, other school years will be deactivated. Continue?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          statusSyResource
+            .update(id, { active_status: status })
+            .then((response) => {
+              this.$message({
+                message:
+                  'School Year ' +
+                  name +
+                  ' has been ' + stat + ' successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.getList();
+              this.loading = false;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Delete canceled',
+          });
+        });
+    },
     handleDelete(id, name) {
       this.$confirm(
         'This will delete ' + name + '. Continue?',
@@ -270,10 +414,17 @@ export default {
       };
     },
     checkStatus(deleted_at) {
-      if (deleted_at === '1'){
+      if (deleted_at === 1){
         return 'Active';
       } else {
         return 'Inactive';
+      }
+    },
+    checkLock(status) {
+      if (status === 1){
+        return 'Locked';
+      } else {
+        return 'Open';
       }
     },
   },
