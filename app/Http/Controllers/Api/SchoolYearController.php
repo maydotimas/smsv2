@@ -30,6 +30,15 @@ class SchoolYearController extends BaseController
 
             $data = $data->paginate($request->limit);
         }
+        else if ($request->has('active') && $request->input('active') != '') {
+            if ($request->input('active') == 'active') {
+                $data = SchoolYear::active(1)
+                    ->with('department_fees')
+                    ->get();
+            } else {
+                $data = SchoolYear::all();
+            }
+        }
         else if ($request->has('type') && $request->input('type') != '') {
             if ($request->input('type') == 'Active') {
                 $data = SchoolYear::active(1)->paginate($request->limit);
@@ -38,7 +47,6 @@ class SchoolYearController extends BaseController
             } else {
                 $data = SchoolYear::paginate($request->limit);
             }
-
         }
         else if ($request->has('year') && $request->input('year') != '') {
             if ($request->input('is_edit') === 'true'){
@@ -62,6 +70,35 @@ class SchoolYearController extends BaseController
             $data = SchoolYear::where('id', '=', $request->id)
                 ->with('department_fees')
                 ->get();
+        }
+        else if (($request->has('enrollment_fees') && $request->input('enrollment_fees') != '')&&
+            ($request->has('school_year_id') && $request->input('school_year_id') != '') &&
+            ($request->has('department') && $request->input('department') != '')) {
+            $data = SchoolYear::where('id', '=', $request->school_year_id)
+                ->get();
+
+            if ($data[0]){
+                // annual
+                $data->annual = SchoolYearFee::where('department_id', '=', $request->department)
+                    ->where('school_year_id','=',$request->school_year_id)
+                    ->where('type','=','ANNUAL')
+                    ->get();
+                // semestral
+                $data->semestral = SchoolYearFee::where('department_id', '=', $request->department)
+                    ->where('school_year_id','=',$request->school_year_id)
+                    ->where('type','=','SEMESTRAL')
+                    ->get();
+                // quarterly
+                $data->quarterly = SchoolYearFee::where('department_id', '=', $request->department)
+                    ->where('school_year_id','=',$request->school_year_id)
+                    ->where('type','=','QUARTERLY')
+                    ->get();
+                // monthly
+                $data->monthly = SchoolYearFee::where('department_id', '=', $request->department)
+                    ->where('school_year_id','=',$request->school_year_id)
+                    ->where('type','=','MONTHLY')
+                    ->get();
+            }
         }
         else if ($request->has('department') && $request->input('department') != '') {
             $data = SchoolYearFee::where('department_id', '=', $request->department)
@@ -92,13 +129,13 @@ class SchoolYearController extends BaseController
      */
     public function store(Request $request)
     {
-//        return dd($request->all());
+        // return dd($request->all());
         // validate fields
         $validator = Validator::make(
             $request->all(),
             [
-//                'year' => ['required', 'unique:school_years,year'],
-//                'name' => ['required','unique:school_years,name'],
+                'year' => ['required', 'unique:school_years,year'],
+                'name' => ['required','unique:school_years,name'],
                 'description' => ['required'],
                 'start' => ['required'],
                 'end' => ['required'],
@@ -232,7 +269,6 @@ class SchoolYearController extends BaseController
                 'start' => $params['start'],
                 'end' => $params['end'],
                 'description' => $params['description'],
-                'status' => 0,
             ]);
 
             // clear all school year department fees

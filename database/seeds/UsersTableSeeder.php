@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $userList = [
+        /*$userList = [
             "Adriana C. Ocampo Uria",
             "Albert Einstein",
             "Anna K. Behrensmeyer",
@@ -82,6 +82,6 @@ class UsersTableSeeder extends Seeder
 
             $role = Role::findByName($roleName);
             $user->syncRoles($role);
-        }
+        }*/
     }
 }

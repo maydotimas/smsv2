@@ -29,10 +29,14 @@ class AuthController extends BaseController
     {
         $credentials = $request->only('email', 'password');
         if (!Auth::attempt($credentials)) {
-            return response()->json(new JsonResponse([], 'login_error'), Response::HTTP_UNAUTHORIZED);
+            return response()->json(new JsonResponse([], 'Login failed.'), Response::HTTP_UNAUTHORIZED);
         }
 
         $user = $request->user();
+
+        if( $user->status != 'VERIFIED' ) {
+            return response()->json(new JsonResponse([], 'Please verify your email.'), Response::HTTP_UNAUTHORIZED);
+        }
 
         return response()->json(new JsonResponse(new UserResource($user)), Response::HTTP_OK);
     }

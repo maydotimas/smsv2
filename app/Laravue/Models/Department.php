@@ -15,6 +15,15 @@ class Department extends Model
         'description',
     ];
 
+    public function grade()
+    {
+        return $this->hasMany('App\Laravue\Models\Grade','department_id','id');
+    }
+    public function section()
+    {
+        return $this->hasMany('App\Laravue\Models\Section','department_id','id');
+    }
+
 
 
 }

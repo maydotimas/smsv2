@@ -1,54 +1,97 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-      <h3 class="title">
-        {{ $t('login.title') }}
-      </h3>
-      <lang-select class="set-language" />
-      <el-form-item prop="email">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
-      </el-form-item>
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          v-model="loginForm.password"
-          :type="pwdType"
-          name="password"
-          auto-complete="on"
-          placeholder="password"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon icon-class="eye" />
-        </span>
-      </el-form-item>
-      <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
-          Sign in
-        </el-button>
-      </el-form-item>
-      <div class="tips">
-        <span style="margin-right:20px;">Email: admin@laravue.dev</span>
-        <span>Password: laravue</span>
+  <div>
+    <div class="login-container">
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+        <h3 class="title">
+          {{ $t('login.title') }}
+        </h3>
+        <lang-select class="set-language" />
+        <el-form-item prop="email">
+          <span class="svg-container">
+            <svg-icon icon-class="user" />
+          </span>
+          <el-input v-model="loginForm.email" name="email" type="text" auto-complete="on" :placeholder="$t('login.email')" />
+        </el-form-item>
+        <el-form-item prop="password">
+          <span class="svg-container">
+            <svg-icon icon-class="password" />
+          </span>
+          <el-input
+            v-model="loginForm.password"
+            :type="pwdType"
+            name="password"
+            auto-complete="on"
+            placeholder="password"
+            @keyup.enter.native="handleLogin"
+          />
+          <span class="show-pwd" @click="showPwd">
+            <svg-icon icon-class="eye" />
+          </span>
+        </el-form-item>
+        <el-form-item>
+          <el-button :loading="loading" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
+            Sign in
+          </el-button>
+        </el-form-item>
+        <div class="tips">
+          <a href="#" @click="dialogFormVisible = true">Register</a>
+          <span>Password: laravue</span>
+        </div>
+      </el-form>
+    </div>
+    <el-dialog :title="'Create new user'" :visible.sync="dialogFormVisible">
+      <div v-loading="userCreating" class="form-container">
+        <el-form ref="userForm" :rules="rules" :model="newUser" label-position="left" label-width="150px" style="max-width: 500px;">
+          <el-form-item :label="$t('user.role')" prop="role">
+            <el-select v-model="newUser.role" class="filter-item" placeholder="Please select role">
+              <el-option v-for="item in nonAdminRoles" :key="item" :label="item | uppercaseFirst" :value="item" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('user.name')" prop="name">
+            <el-input v-model="newUser.name" />
+          </el-form-item>
+          <el-form-item :label="$t('user.email')" prop="email">
+            <el-input v-model="newUser.email" />
+          </el-form-item>
+          <el-form-item :label="$t('user.password')" prop="password">
+            <el-input v-model="newUser.password" show-password />
+          </el-form-item>
+          <el-form-item :label="$t('user.confirmPassword')" prop="confirmPassword">
+            <el-input v-model="newUser.confirmPassword" show-password />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="createUser()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
       </div>
-    </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import LangSelect from '@/components/LangSelect';
+import Resource from '@/api/resource';
 import { validEmail } from '@/utils/validate';
 import { csrf } from '@/api/auth';
+
+const registrationResource = new Resource('registration');
 
 export default {
   name: 'Login',
   components: { LangSelect },
   data() {
+    var validateConfirmPassword = (rule, value, callback) => {
+      if (value !== this.newUser.password) {
+        callback(new Error('Password is mismatched!'));
+      } else {
+        callback();
+      }
+    };
     const validateEmail = (rule, value, callback) => {
       if (!validEmail(value)) {
         callback(new Error('Please enter the correct email'));
@@ -76,6 +119,27 @@ export default {
       pwdType: 'password',
       redirect: undefined,
       otherQuery: {},
+      dialogFormVisible: false,
+      userCreating: false,
+      newUser: {
+        name: '',
+        email: '',
+        password: '',
+        status: '',
+        confirmPassword: '',
+      },
+      rules: {
+        role: [{ required: true, message: 'Role is required', trigger: 'change' }],
+        name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
+        email: [
+          { required: true, message: 'Email is required', trigger: 'blur' },
+          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+        ],
+        password: [{ required: true, message: 'Password is required', trigger: 'blur' }],
+        confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
+      },
+      roles: ['admin', 'auditor', 'cashier', 'user', 'visitor'],
+      nonAdminRoles: ['cashier', 'parent', 'visitor'],
     };
   },
   watch: {
@@ -125,6 +189,43 @@ export default {
         }
         return acc;
       }, {});
+    },
+    resetNewUser() {
+      this.newUser = {
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        role: 'user',
+      };
+    },
+    createUser() {
+      this.$refs['userForm'].validate((valid) => {
+        if (valid) {
+          this.newUser.roles = [this.newUser.role];
+          this.userCreating = true;
+          registrationResource
+            .store(this.newUser)
+            .then(response => {
+              this.$message({
+                message: 'New user ' + this.newUser.name + '(' + this.newUser.email + ') has been created successfully. A verification mail has been sent to your email address. Please verify to continue use.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.resetNewUser();
+              this.dialogFormVisible = false;
+            })
+            .catch(error => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.userCreating = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
   },
 };

@@ -20,6 +20,10 @@ use \App\Laravue\Acl;
 
 Route::namespace('Api')->group(function() {
     Route::post('auth/login', 'AuthController@login');
+    // User Registration
+    Route::post('registration', 'UserController@store');
+    Route::get('verify', 'UserController@verify');
+
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
         Route::get('auth/user', 'AuthController@user');
@@ -53,6 +57,27 @@ Route::namespace('Api')->group(function() {
         /*Department*/
         Route::apiResource('departments', 'DepartmentController')->middleware('permission:manage department');
         Route::get('departments', 'DepartmentController@index')->name('department.index')->middleware('permission:view department|manage department');
+
+        /*Grades*/
+        Route::apiResource('grades', 'GradeController')->middleware('permission:manage grade');
+        Route::get('grades', 'GradeController@index')->name('grade.index')->middleware('permission:view grade|manage grade');
+
+        /*Section*/
+        Route::apiResource('sections', 'SectionController')->middleware('permission:manage section');
+        Route::get('sections', 'SectionController@index')->name('section.index')->middleware('permission:view section|manage section');
+
+        /* Reservations */
+        Route::apiResource('reservations', 'ReservationController')->middleware('permission:manage reservation');
+        Route::get('reservations', 'ReservationController@index')->name('reservation.index')->middleware('permission:view reservation|manage reservation');
+
+        /* Reservations */
+        Route::apiResource('enrollments', 'EnrollmentController')->middleware('permission:manage enrollment');
+        Route::get('enrollments', 'EnrollmentController@index')->name('enrollment.index')->middleware('permission:view enrollment|manage enrollment');
+
+        /* Reservations */
+        Route::apiResource('enrollment-payments', 'EnrollmentPaymentController')->middleware('permission:manage enrollment-payment');
+        Route::get('enrollment-payments', 'EnrollmentPaymentController@index')->name('enrollmentpayment.index')->middleware('permission:view enrollment-payment|manage enrollment-payment');
+
     });
 });
 

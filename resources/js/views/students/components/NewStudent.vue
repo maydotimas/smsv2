@@ -6,7 +6,7 @@
       :rules="rules"
       class="form-container"
     >
-      <sticky v-if="isEdit===false" :class-name="'sub-navbar active'">
+      <sticky v-if="isEdit===false && created===false" :class-name="'sub-navbar active'">
         <el-button
           v-loading="loading"
           style="margin-left: 10px"
@@ -20,7 +20,7 @@
         </el-button>
       </sticky>
 
-      <sticky v-if="isEdit===true" :class-name="'sub-navbar active'">
+      <sticky v-if="isEdit===true || created === true" :class-name="'sub-navbar active'">
         <el-button
           v-loading="loading"
           style="margin-left: 10px"
@@ -941,6 +941,7 @@ export default {
       mother: Object.assign({}, defaultForm.mother),
       guardian: Object.assign({}, defaultForm.guardian),
       loading: false,
+      created: false,
       /* Date Picker */
       datePickerOptions: {
         disabledDate(date) {
@@ -1129,7 +1130,7 @@ export default {
         this.hasDuplicate = false;
         this.$refs.postForm.validate((valid) => {
           if (valid) {
-            if (this.isEdit === false){
+            if (this.isEdit === false && this.created === false){
               this.$confirm(
                 'Do you want to create ' + this.student.first_name + "'s record?",
                 'Confirm Save Student Details',
@@ -1154,6 +1155,8 @@ export default {
                         duration: 5 * 1000,
                       });
                       console.log(response);
+                      this.student.id = response.data.id;
+                      this.created = true;
                       this.loading = false;
                     })
                     .catch((error) => {
@@ -1348,9 +1351,8 @@ export default {
     top: 0px;
   }
 }
-</style>
-<style>
 .createPost-container label.el-form-item__label {
   text-align: left;
+  padding-left: 2%;
 }
 </style>

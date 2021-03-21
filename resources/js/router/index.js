@@ -20,6 +20,8 @@ import Layout from '@/layout';
 import adminRoutes from './modules/admin';
 import schoolYearRoutes from './modules/schoolyear';
 import studentRoutes from './modules/students';
+import reservationRoutes from './modules/reservation';
+import enrollmentRoutes from './modules/enrollment';
 // import nestedRoutes from './modules/nested';
 import errorRoutes from './modules/error';
 // import excelRoutes from './modules/excel';
@@ -121,32 +123,19 @@ export const constantRoutes = [
       },
     ],
   },
-  {
-    path: '/reservation',
-    component: Layout,
-    redirect: '/reservation',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/users/SelfProfile'),
-        name: 'Reservation',
-        meta: { title: 'reservation', icon: 'user', noCache: true },
-      },
-    ],
-  },
-  {
-    path: '/enrollment',
-    component: Layout,
-    redirect: '/enrollment',
-    children: [
-      {
-        path: '',
-        component: () => import('@/views/users/SelfProfile'),
-        name: 'Enrollment',
-        meta: { title: 'enrollment', icon: 'user', noCache: true },
-      },
-    ],
-  },
+  // {
+  //   path: '/enrollment',
+  //   component: Layout,
+  //   redirect: '/enrollment',
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: () => import('@/views/users/SelfProfile'),
+  //       name: 'Enrollment',
+  //       meta: { title: 'enrollment', icon: 'user', noCache: true },
+  //     },
+  //   ],
+  // },
   // {
   //   path: '/guide',
   //   component: Layout,
@@ -170,6 +159,8 @@ export const asyncRoutes = [
   // nestedRoutes,
   // tableRoutes,
   studentRoutes,
+  reservationRoutes,
+  enrollmentRoutes,
   adminRoutes,
   schoolYearRoutes,
   // {

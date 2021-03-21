@@ -6,7 +6,7 @@
       :rules="rules"
       class="form-container"
     >
-      <sticky v-if="isEdit===false" :class-name="'sub-navbar active'">
+      <sticky v-if="isEdit===false && created===false" :class-name="'sub-navbar active'">
         <el-button
           v-loading="loading"
           style="margin-left: 10px"
@@ -20,7 +20,7 @@
         </el-button>
       </sticky>
 
-      <sticky v-if="isEdit===true" :class-name="'sub-navbar active'">
+      <sticky v-if="isEdit===true || created === true" :class-name="'sub-navbar active'">
         <el-button
           v-loading="loading"
           style="margin-left: 10px"
@@ -77,6 +77,11 @@
                           <el-option label="2028" value="2028" />
                           <el-option label="2029" value="2029" />
                           <el-option label="2030" value="2030" />
+                          <el-option label="2031" value="2031" />
+                          <el-option label="2032" value="2032" />
+                          <el-option label="2033" value="2033" />
+                          <el-option label="2034" value="2034" />
+                          <el-option label="2035" value="2035" />
                         </el-select>
                       </el-form-item>
                     </el-col>
@@ -667,6 +672,7 @@ export default {
       loading: false,
       start_date: '',
       end_date: '',
+      created: false,
       datePickerOptions: {
         // disabledDate(date) {
         //   return date < new Date();
@@ -1008,7 +1014,7 @@ export default {
     async checkDuplicateSchoolYear() {
       const { data } = await schoolYearResource.list({
         year: this.schoolyear.year,
-        is_edit: this.isEdit,
+        is_edit: this.isEdit || this.created,
         id: this.schoolyear.id,
       });
       if (data.length > 0) {
@@ -1020,7 +1026,7 @@ export default {
     async checkDuplicateSchoolName() {
       const { data } = await schoolYearResource.list({
         name: this.schoolyear.name,
-        is_edit: this.isEdit,
+        is_edit: this.isEdit || this.created,
         id: this.schoolyear.id,
       });
       if (data.length > 0) {
@@ -1031,6 +1037,7 @@ export default {
     },
     /* Update */
     confirmSave(text, data){
+      console.log(this.schoolyear);
       if (data) {
         this.$message({
           message: 'School Year Name already exists.',
@@ -1043,7 +1050,9 @@ export default {
         this.hasDuplicate = false;
         this.$refs.postForm.validate((valid) => {
           if (valid) {
-            if (this.isEdit === false){
+            alert(this.isEdit);
+            alert(this.created);
+            if (this.isEdit === false && this.created === false){
               this.$confirm(
                 'Do you want to create ' + this.schoolyear.year + "'s record?",
                 'Confirm Save School Year Details',
@@ -1067,7 +1076,8 @@ export default {
                         type: 'success',
                         duration: 5 * 1000,
                       });
-                      // console.log(response);
+                      this.schoolyear.id = response.data.id;
+                      this.created = true;
                       this.loading = false;
                     })
                     .catch((error) => {

@@ -48,6 +48,8 @@ class StudentController extends BaseController
         } else if (($request->has('student_no') && $request->input('student_no') != '') &&
             ($request->has('student_id') && $request->input('student_id') != '')) {
             $data = Student::studentNumber($request->student_no, $request->student_id)->get();
+        } else if (($request->has('student_no') && $request->input('student_no') != '')) {
+            $data = Student::studentNumber($request->student_no, $request->student_id)->get();
         } else {
             $data = Student::paginate($request->limit);
         }

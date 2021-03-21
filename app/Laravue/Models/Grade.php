@@ -16,4 +16,14 @@ class Grade extends Model
         'department_id',
         'order',
     ];
+
+    public function grade()
+    {
+        return $this->belongsTo('App\Laravue\Models\Grade','department_id','id');
+    }
+
+    public function section()
+    {
+        return $this->hasMany('App\Laravue\Models\Section','grade_id','id');
+    }
 }

@@ -20,6 +20,8 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Validator;
 
 /**
@@ -80,13 +82,27 @@ class UserController extends BaseController
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
             $params = $request->all();
+            $token = Hash::make($params['email']);
             $user = User::create([
                 'name' => $params['name'],
                 'email' => $params['email'],
+                'status' => 'UNVERIFIED',
+                'token' => $token,
                 'password' => Hash::make($params['password']),
             ]);
             $role = Role::findByName($params['role']);
             $user->syncRoles($role);
+
+            $to_name = $params['name'];
+            $to_email = $params['email'];
+            $url = URL::to('/').'/api/verify?token='.$token;
+
+            $data = array('name'=>$to_name, "url" => $url);
+
+            Mail::send('emails', $data, function($message) use ($to_name, $to_email) {
+                $message->to($to_email, $to_name)->subject('Welcome to Isidore School Management System');
+                $message->from('isidore.sms@gmail.com','Isidore School Management');
+            });
 
             return new UserResource($user);
         }
@@ -229,5 +245,12 @@ class UserController extends BaseController
                 'array'
             ],
         ];
+    }
+    public function verify(Request $request){
+        $user = User::where('token','=',$request->input('token'))
+            ->update([
+                'status' => 'VERIFIED'
+            ]);
+        return redirect('/#/');
     }
 }

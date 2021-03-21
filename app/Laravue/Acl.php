@@ -21,7 +21,7 @@ final class Acl
     const ROLE_ADMIN = 'admin';
     const ROLE_MANAGER = 'auditor';
     const ROLE_EDITOR = 'cashier';
-    const ROLE_USER = 'user';
+    const ROLE_USER = 'parent';
     const ROLE_VISITOR = 'visitor';
 
     const PERMISSION_VIEW_MENU_ELEMENT_UI = 'view menu element ui';

@@ -41,6 +41,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="center" label="Status" width="120">
+        <template slot-scope="scope">
+          <span>{{ scope.row.status }}</span>
+        </template>
+      </el-table-column>
+
       <el-table-column align="center" label="Actions" width="350">
         <template slot-scope="scope">
           <router-link v-if="!scope.row.roles.includes('admin')" :to="'/administrator/users/edit/'+scope.row.id">
@@ -276,6 +282,7 @@ export default {
       this.loading = true;
       const { data, meta } = await userResource.list(this.query);
       this.list = data;
+      console.log(this.list);
       this.list.forEach((element, index) => {
         element['index'] = (page - 1) * limit + index + 1;
       });
