@@ -160,7 +160,7 @@ export const asyncRoutes = [
   // tableRoutes,
   studentRoutes,
   reservationRoutes,
-  // enrollmentRoutes,
+  enrollmentRoutes,
   adminRoutes,
   schoolYearRoutes,
   // {

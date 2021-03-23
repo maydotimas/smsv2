@@ -39,7 +39,7 @@
         @click="handleDownload"
       >Export</el-button>
     </div>
-    <!--<el-table v-if="list" v-loading="loading" :data="list" border fit highlight-current-row>
+    <el-table v-if="list" v-loading="loading" :data="list" border fit highlight-current-row>
       <el-table-column align="center" label="#" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.index }}</span>
@@ -132,7 +132,7 @@
       :page.sync="listQuery.page"
       :limit.sync="listQuery.limit"
       @pagination="getList"
-    />-->
+    />
   </div>
 </template>
 
@@ -192,8 +192,8 @@ export default {
     };
   },
   created() {
-/*     this.getList();
-    this.getSchoolYear(); */
+    this.getList();
+    this.getSchoolYear();
   },
   methods: {
     isLocked(status){

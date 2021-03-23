@@ -43,7 +43,7 @@
       </sticky>
 
       <div class="createPost-main-container">
-        <el-row  v-if="hasReservation === false">
+        <el-row v-if="hasReservation === false">
           <el-card class="box-card" style="margin-top: 2%">
             <el-col>
               <el-form-item label="Student Type">
@@ -62,7 +62,7 @@
         </el-row>
         <!-- NEW ENROLLMENT DETAILS  -->
         <el-row>
-          <el-col  v-if="hasReservation === false">
+          <el-col v-if="hasReservation === false">
             <el-row>
               <el-card class="box-card user-bio" style="margin-top: 2%">
                 <div
@@ -191,7 +191,7 @@
               </el-card>
             </el-row>
           </el-col>
-          <el-col  v-if="hasReservation === false" style="margin-top: 2%;">
+          <el-col v-if="hasReservation === false" style="margin-top: 2%;">
             <el-row>
               <el-card class="box-card user-bio">
                 <div slot="header" class="clearfix">
@@ -484,19 +484,19 @@
                       </el-form-item>
                     </el-col>
                     <el-col :span="8">
-                    <el-form-item
-                      label-width="150px"
-                      label="Reservation Date"
-                      class="postInfo-container-item"
-                      prop="section"
-                    >
-                     <el-input
-                        v-model="student_reservation.date_reserve"
-                        class="filter-item"
-                        readonly
-                      />
-                    </el-form-item>
-                  </el-col>
+                      <el-form-item
+                        label-width="150px"
+                        label="Reservation Date"
+                        class="postInfo-container-item"
+                        prop="section"
+                      >
+                        <el-input
+                          v-model="student_reservation.date_reserve"
+                          class="filter-item"
+                          readonly
+                        />
+                      </el-form-item>
+                    </el-col>
                     <el-col :span="24">
                       <el-form-item
                         label-width="120px"
@@ -614,7 +614,6 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  
                   <el-col :span="16">
                     <el-form-item
                       label-width="120px"
@@ -868,8 +867,8 @@ export default {
       student: [{ student_no: '' }],
       student_reservation: [{ id: '' }],
       reservation_code: '',
-      discounts: ['NONE','VALEDICTORIAN','SALUTATORIAN','SIBLING','SCHOLAR'],
-      payment_modes: ['ANNUAL','SEMESTRAL','QUARTERLY','MONTHLY'],
+      discounts: ['NONE', 'VALEDICTORIAN', 'SIBLING', 'SCHOLAR'],
+      payment_modes: ['ANNUAL', 'SEMESTRAL', 'QUARTERLY', 'MONTHLY'],
       school_year: [],
       departments: [],
       grades: [],
@@ -982,7 +981,7 @@ export default {
       });
       this.student_reservation = data[0];
       var temp_reservation = false;
-      if( data.length > 0 ) {
+      if (data.length > 0){
         temp_reservation = true;
         this.hasReservation = true;
         console.log('reservation');
@@ -1007,7 +1006,6 @@ export default {
       } else {
         this.hasReservation = false;
       }
-      
     },
     enterReservation(){
 
