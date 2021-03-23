@@ -16,9 +16,8 @@ return [
     */
 
     'paths' => [
-        'api/*',
-        'api/sanctum/*',
-        '/*',
+        '*',
+        '/api/sanctum/*',
     ],
 
     'allowed_methods' => ['*'],
