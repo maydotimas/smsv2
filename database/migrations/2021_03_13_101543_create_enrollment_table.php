@@ -19,6 +19,21 @@ class CreateEnrollmentTable extends Migration
             $table->string('remarks')->nullable();
             $table->string('date_enrolled')->nullable();
             $table->enum('status',['ENROLLED','CANCELLED']);
+            $table->enum('discount',['NONE','SIBLING','SCHOLAR']);
+            $table->string('percent')->nullable();
+
+            /* tuition details */
+            $table->enum('payment_mode',['ANNUAL','SEMESTRAL','QUARTERLY','MONTHLY']);
+            $table->string('reservation_fee')->nullable();
+            $table->string('months')->nullable();
+            $table->string('discount_amount')->nullable();
+            $table->string('total_amount')->nullable();
+            $table->string('total_tf')->nullable();
+            $table->string('total_misc')->nullable();
+            $table->string('monthly_tuition_fee')->nullable();
+            $table->string('monthly_misc_fee')->nullable();
+            $table->string('enrollment_tuition_fee')->nullable();
+            $table->string('enrollment_misc_fee')->nullable();
 
             $table->unsignedBigInteger('reservation_id')->nullable();
             $table->unsignedBigInteger('student_id')->nullable();

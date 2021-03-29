@@ -79,25 +79,29 @@ class SchoolYearController extends BaseController
 
             if ($data[0]){
                 // annual
-                $data->annual = SchoolYearFee::where('department_id', '=', $request->department)
+                $data[0]->annual = SchoolYearFee::where('department_id', '=', $request->department)
                     ->where('school_year_id','=',$request->school_year_id)
                     ->where('type','=','ANNUAL')
-                    ->get();
+                    ->get()
+                    ->toArray();
                 // semestral
-                $data->semestral = SchoolYearFee::where('department_id', '=', $request->department)
+                $data[0]->semestral = SchoolYearFee::where('department_id', '=', $request->department)
                     ->where('school_year_id','=',$request->school_year_id)
                     ->where('type','=','SEMESTRAL')
-                    ->get();
+                    ->get()
+                    ->toArray();
                 // quarterly
-                $data->quarterly = SchoolYearFee::where('department_id', '=', $request->department)
+                $data[0]->quarterly = SchoolYearFee::where('department_id', '=', $request->department)
                     ->where('school_year_id','=',$request->school_year_id)
                     ->where('type','=','QUARTERLY')
-                    ->get();
+                    ->get()
+                    ->toArray();
                 // monthly
-                $data->monthly = SchoolYearFee::where('department_id', '=', $request->department)
+                $data[0]->monthly = SchoolYearFee::where('department_id', '=', $request->department)
                     ->where('school_year_id','=',$request->school_year_id)
                     ->where('type','=','MONTHLY')
-                    ->get();
+                    ->get()
+                    ->toArray();
             }
         }
         else if ($request->has('department') && $request->input('department') != '') {
@@ -168,8 +172,8 @@ class SchoolYearController extends BaseController
                             'type' => 'ANNUAL',
                             'total_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
                             'total_misc_fee' => $department_fee['annual']['total_misc_fee'],
-                            'enrollment_tuition_fee' => $department_fee['annual']['enrollment_tuition_fee'],
-                            'enrollment_misc_fee' => $department_fee['annual']['enrollment_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['annual']['total_misc_fee'],
                             'monthly_tuition_fee' => $department_fee['annual']['monthly_tuition_fee'],
                             'monthly_misc_fee' => $department_fee['annual']['monthly_misc_fee'],
                         ]);
@@ -287,8 +291,8 @@ class SchoolYearController extends BaseController
                             'type' => 'ANNUAL',
                             'total_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
                             'total_misc_fee' => $department_fee['annual']['total_misc_fee'],
-                            'enrollment_tuition_fee' => $department_fee['annual']['enrollment_tuition_fee'],
-                            'enrollment_misc_fee' => $department_fee['annual']['enrollment_misc_fee'],
+                            'enrollment_tuition_fee' => $department_fee['annual']['total_tuition_fee'],
+                            'enrollment_misc_fee' => $department_fee['annual']['total_misc_fee'],
                             'monthly_tuition_fee' => $department_fee['annual']['monthly_tuition_fee'],
                             'monthly_misc_fee' => $department_fee['annual']['monthly_misc_fee'],
                         ]);

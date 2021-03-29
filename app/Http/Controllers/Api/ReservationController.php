@@ -72,8 +72,7 @@ class ReservationController extends BaseController
                 ->with('student')
                 ->with('section')
                 ->get();
-
-            if($data[0]){
+            if(isset($data[0])){
                 $student_id = $data[0]->student->id;
                 $student = Student::where('id','=',$student_id)
                     ->with('father')

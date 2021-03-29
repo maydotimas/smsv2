@@ -20,13 +20,16 @@ class CreateEnrollmentPaymentsTable extends Migration
             $table->unsignedBigInteger('enrollment_id')->nullable();
             $table->unsignedBigInteger('student_id')->nullable();
 
+            $table->string('payment_no')->nullable();
             $table->string('payment_month')->nullable();
             $table->string('payment_tf_amount')->nullable();
             $table->string('payment_misc_amount')->nullable();
+            $table->string('total_amount')->nullable();
             $table->string('payment_due')->nullable();
             $table->string('interest')->nullable();
 
             $table->string('accomplished_date')->nullable();
+            $table->string('remarks')->nullable();
             $table->enum('status',['UNPAID','PAID']);
 
             $table->foreign('enrollment_id')->nullable()->references('id')->on('enrollments');

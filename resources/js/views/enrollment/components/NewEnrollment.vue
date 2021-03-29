@@ -572,6 +572,22 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
+                  <el-col :span="24">
+                      <el-form-item
+                        label-width="120px"
+                        label="Remarks"
+                        prop="remarks"
+                      >
+                        <el-input
+                          v-model="enrollment.remarks"
+                          type="textarea"
+                          name="remarks"
+                          maxlength="500"
+                          minlength="5"
+                          placeholder="Remarks"
+                        />
+                      </el-form-item>
+                    </el-col>
                   <el-col :span="8">
                     <el-form-item
                       label-width="120px"
@@ -583,6 +599,7 @@
                         v-model="enrollment.discount"
                         class="filter-item"
                         placeholder="Please Select Section"
+                        @change="setStudentTuition"
                       >
                         <el-option
                           v-for="item in discounts"
@@ -591,6 +608,25 @@
                           :value="item"
                         />
                       </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col v-if="enrollment.discount!=='NONE' && enrollment.discount!==''" :span="8">
+                    <el-form-item
+                      label-width="120px"
+                      label="Percentage"
+                      class="postInfo-container-item"
+                      prop="section"
+                    >
+                      <el-input
+                        v-model="enrollment.percent"
+                        type="number"
+                        name="percent"
+                        :min="0"
+                        :max="100"
+                        maxlength="3"
+                        placeholder="discount percent"
+                        @change="setStudentTuition"
+                      />
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
@@ -604,6 +640,7 @@
                         v-model="enrollment.payment_mode"
                         class="filter-item"
                         placeholder="Please Select Section"
+                        @change="setStudentTuition"
                       >
                         <el-option
                           v-for="item in payment_modes"
@@ -614,25 +651,105 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="16">
-                    <el-form-item
-                      label-width="120px"
-                      label="Remarks"
-                      prop="remarks"
-                    >
-                      <el-input
-                        v-model="enrollment.remarks"
-                        type="textarea"
-                        name="remarks"
-                        maxlength="500"
-                        minlength="5"
-                        placeholder="Remarks"
+                  <el-col v-if="enrollment.tuition && enrollment.payment_mode !== ''" :span="24">
+                    <el-table :data="enrollment.tuition" style="width: 100%">
+                      <el-table-column
+                        prop="type"
+                        label="Payment Mode"
+                        width="150"
                       />
-                    </el-form-item>
+                      <el-table-column label="Less">
+                        <el-table-column
+                          prop="reservation_fee"
+                          label="Reservation"
+                          width="100"
+                        />
+                        <el-table-column
+                          prop="discount"
+                          label="Discount"
+                          width="100"
+                        />
+                      </el-table-column>
+                      <el-table-column label="Tuition Info">
+                        <el-table-column
+                          prop="total_tuition_fee"
+                          label="Tuition Fee"
+                          width="100"
+                        />
+                        <el-table-column
+                          prop="total_misc_fee"
+                          label="Misc Fee"
+                          width="100"
+                        />
+                        <el-table-column label="Enrollment">
+                          <el-table-column
+                            prop="enrollment_tuition_fee"
+                            label="Tuition Fee"
+                            width="120"
+                          />
+                          <el-table-column
+                            prop="enrollment_misc_fee"
+                            label="Misc Fee"
+                            width="120"
+                          />
+                        </el-table-column>
+                        <el-table-column label="Installment">
+                          <el-table-column
+                            prop="monthly_tuition_fee"
+                            label="Monthly TF"
+                            width="120"
+                          />
+                          <el-table-column
+                            prop="monthly_misc_fee"
+                            label="Monthly Misc"
+                            width="120"
+                          />
+                          <el-table-column
+                            prop="months"
+                            label="Payments"
+                            width="120"
+                          />
+                        </el-table-column>
+                      </el-table-column>
+                      <el-table-column
+                        prop="total"
+                        label="Total"
+                        width="150"
+                      />
+                    </el-table>
+                  </el-col>
+                  <el-col v-if="enrollment.payment_schedule && enrollment.payment_mode !== ''" :span="24">
+                    <el-table :data="enrollment.payment_schedule" style="width: 100%; margin-top:5%;">
+                      <el-table-column label="Payment Details">
+                        <el-table-column
+                          prop="payment_no"
+                          label="Payment No."
+                        />
+                        <el-table-column
+                          prop="tuition_fee"
+                          label="Tuition Fee"
+                        />
+                        <el-table-column
+                          prop="misc_fee"
+                          label="Misc Fee"
+                        />
+                        <el-table-column
+                          prop="total"
+                          label="Total"
+                        />
+                        <el-table-column
+                          prop="due_date"
+                          label="Due Date"
+                        />
+                        <el-table-column
+                          prop="remarks"
+                          label="Remarks"
+                        />
+                      </el-table-column>
+                    </el-table>
                   </el-col>
                 </div>
               </el-card>
-              <br>
             </el-row>
           </el-col>
         </el-row>
@@ -797,6 +914,7 @@ import Resource from '@/api/resource';
 import permission from '@/directive/permission';
 import waves from '@/directive/waves';
 
+const enrollmentResource = new Resource('enrollments');
 const reservationResource = new Resource('reservations');
 const studentResource = new Resource('students');
 const departmentResource = new Resource('departments');
@@ -817,9 +935,17 @@ const defaultForm = {
     department: '',
     grade: '',
     section: '',
+    discount: '',
+    remarks: '',
+    payment_mode: '',
+    percent: 0,
     school_year_id: '',
+    reservation_id: '',
+    tuition: [],
+    payment_schedule: [],
     fee: '1000',
     student_type: 'Old Student',
+    type: '',
     with_reservation: 'Yes',
   },
 };
@@ -867,8 +993,13 @@ export default {
       student: [{ student_no: '' }],
       student_reservation: [{ id: '' }],
       reservation_code: '',
-      discounts: ['NONE', 'VALEDICTORIAN', 'SIBLING', 'SCHOLAR'],
+      discounts: ['NONE', 'SIBLING', 'SCHOLAR'],
       payment_modes: ['ANNUAL', 'SEMESTRAL', 'QUARTERLY', 'MONTHLY'],
+      fees: [],
+      annual: [],
+      semestral: [],
+      quarterly: [],
+      monthly: [],
       school_year: [],
       departments: [],
       grades: [],
@@ -948,6 +1079,300 @@ export default {
     this.getSections();
   },
   methods: {
+    formatData(value){
+      var fee = parseFloat(Math.ceil(value)).toFixed(2);
+      return fee;
+    },
+    formatDate(date) {
+      var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+      if (month.length < 2) {
+        month = '0' + month;
+      }
+      if (day.length < 2) {
+        day = '0' + day;
+      }
+      return [year, month, day].join('-');
+    },
+    setStudentTuition(){
+      var discount = this.enrollment.percent;
+      if (discount > 100) {
+        this.enrollment.percent = 100;
+        discount = 100;
+      } else if (discount < 0) {
+        this.enrollment.percent = 0;
+        discount = 0;
+      }
+      var d = new Date();
+      var less_discount = 0;
+      var less = 0;
+      var less_reservation_fee = 0;
+      var less_monthly = 0;
+      var less_enrollment = 0;
+      if (discount === '' || this.enrollment.discount === 'NONE') {
+        discount = 0;
+      }
+      this.enrollment.tuition = [];
+      this.enrollment.payment_schedule = [];
+      if (this.hasReservation === true){
+        if (this.enrollment.student_type === 'Old Student'){
+          less_reservation_fee = 1000;
+        } else {
+          less_reservation_fee = 2000;
+        }
+      }
+      if (this.hasReservation === true) {
+        this.enrollment.payment_schedule.push({
+          payment_no: 'Reservation Fee',
+          tuition_fee: this.formatData(this.student_reservation.reservation_fee),
+          misc_fee: 0.00,
+          total: this.formatData(this.student_reservation.reservation_fee),
+          due_date: this.formatDate(this.enrollment.reservation_date),
+          remarks: 'PAID',
+        });
+      }
+      if (this.enrollment.payment_mode === 'ANNUAL'){
+        if (discount > 0) {
+          less_discount = this.formatData(this.annual[0].total_tuition_fee * (discount / 100));
+          less = this.formatData(this.annual[0].total_tuition_fee * (discount / 100) + less_reservation_fee);
+          less_enrollment = this.formatData(this.annual[0].enrollment_tuition_fee * (discount / 100) + less_reservation_fee);
+          if (less > this.annual[0].total_tuition_fee) {
+            less = this.formatData(this.annual[0].total_tuition_fee);
+            less_enrollment = this.formatData(this.annual[0].enrollment_tuition_fee);
+          }
+        } else {
+          less = this.formatData(less_reservation_fee);
+          less_enrollment = this.formatData(less_reservation_fee);
+        }
+        this.enrollment.tuition.push({
+          type: 'ANNUAL',
+          months: '1',
+          reservation_fee: this.formatData(less_reservation_fee),
+          discount: this.formatData(less_discount),
+          total: this.formatData(this.annual[0].total_tuition_fee - less + this.annual[0].total_misc_fee),
+          total_tuition_fee: this.formatData(this.annual[0].total_tuition_fee - less),
+          total_misc_fee: this.formatData(this.annual[0].total_misc_fee),
+          monthly_tuition_fee: this.formatData(this.annual[0].monthly_tuition_fee - less_monthly),
+          monthly_misc_fee: this.formatData(this.annual[0].monthly_misc_fee),
+          enrollment_tuition_fee: this.formatData(this.annual[0].enrollment_tuition_fee - less_enrollment),
+          enrollment_misc_fee: this.formatData(this.annual[0].enrollment_misc_fee),
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 1,
+          tuition_fee: this.formatData(this.annual[0].enrollment_tuition_fee - less_enrollment),
+          misc_fee: this.formatData(this.annual[0].enrollment_misc_fee),
+          total: this.formatData(this.annual[0].enrollment_tuition_fee - less_enrollment + this.annual[0].enrollment_misc_fee),
+          due_date: this.formatDate(d.toString()),
+          remarks: 'Enrollment Payment',
+        });
+      } else if (this.enrollment.payment_mode === 'SEMESTRAL'){
+        if (discount > 0) {
+          less_discount = this.formatData(this.semestral[0].total_tuition_fee * (discount / 100));
+          less = this.formatData(this.semestral[0].total_tuition_fee * (discount / 100) + less_reservation_fee);
+          less_monthly = this.formatData(this.semestral[0].monthly_tuition_fee * (discount / 100) + (less_reservation_fee / 2));
+          less_enrollment = this.formatData(this.semestral[0].enrollment_tuition_fee * (discount / 100) + (less_reservation_fee / 2));
+          if (less > this.semestral[0].total_tuition_fee) {
+            less = this.formatData(this.semestral[0].total_tuition_fee);
+            less_enrollment = this.formatData(this.semestral[0].enrollment_tuition_fee);
+          }
+        } else {
+          less = this.formatData(less_reservation_fee);
+          less_monthly = this.formatData(less_reservation_fee / 2);
+          less_enrollment = this.formatData(less_reservation_fee / 2);
+        }
+        this.enrollment.tuition.push({
+          type: 'SEMESTRAL',
+          months: '2',
+          reservation_fee: less_reservation_fee,
+          discount: less_discount,
+          total: this.formatData(this.semestral[0].total_tuition_fee - less + this.semestral[0].total_misc_fee),
+          total_tuition_fee: this.formatData(this.semestral[0].total_tuition_fee - less),
+          total_misc_fee: this.formatData(this.semestral[0].total_misc_fee),
+          monthly_tuition_fee: this.formatData(this.semestral[0].monthly_tuition_fee - less_monthly),
+          monthly_misc_fee: this.formatData(this.semestral[0].monthly_misc_fee),
+          enrollment_tuition_fee: this.formatData(this.semestral[0].enrollment_tuition_fee - less_enrollment),
+          enrollment_misc_fee: this.formatData(this.semestral[0].enrollment_misc_fee),
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 1,
+          tuition_fee: this.formatData(this.semestral[0].enrollment_tuition_fee - less_enrollment),
+          misc_fee: this.formatData(this.semestral[0].enrollment_misc_fee),
+          due_date: this.formatDate(d.toString()),
+          total: this.formatData(this.semestral[0].enrollment_tuition_fee - less_enrollment + this.semestral[0].enrollment_misc_fee),
+          remarks: 'Enrollment Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 2,
+          tuition_fee: this.formatData(this.semestral[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.semestral[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-12-15'),
+          total: this.formatData(this.semestral[0].monthly_tuition_fee - less_monthly + this.semestral[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+      } else if (this.enrollment.payment_mode === 'QUARTERLY'){
+        if (discount > 0) {
+          less_discount = this.formatData(this.quarterly[0].total_tuition_fee * (discount / 100));
+          less = this.formatData(this.quarterly[0].total_tuition_fee * (discount / 100) + less_reservation_fee);
+          less_monthly = this.formatData(this.quarterly[0].monthly_tuition_fee * (discount / 100) + (less_reservation_fee / 4));
+          less_enrollment = this.formatData(this.quarterly[0].enrollment_tuition_fee * (discount / 100) + (less_reservation_fee / 4));
+          if (less > this.quarterly[0].total_tuition_fee) {
+            less = this.formatData(this.quarterly[0].total_tuition_fee);
+            less_enrollment = this.formatData(this.quarterly[0].enrollment_tuition_fee);
+          }
+        } else {
+          less = this.formatData(less_reservation_fee);
+          less_enrollment = this.formatData((less_reservation_fee / 4));
+          less_monthly = this.formatData((less_reservation_fee / 4));
+        }
+        this.enrollment.tuition.push({
+          type: 'QUARTERLY',
+          months: '4',
+          reservation_fee: less_reservation_fee,
+          discount: less_discount,
+          total: this.formatData(this.quarterly[0].total_tuition_fee - less + this.quarterly[0].total_misc_fee),
+          total_tuition_fee: this.formatData(this.quarterly[0].total_tuition_fee - less),
+          total_misc_fee: this.formatData(this.quarterly[0].total_misc_fee),
+          monthly_tuition_fee: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly),
+          monthly_misc_fee: this.formatData(this.quarterly[0].monthly_misc_fee),
+          enrollment_tuition_fee: this.formatData(this.quarterly[0].enrollment_tuition_fee - less_enrollment),
+          enrollment_misc_fee: this.formatData(this.quarterly[0].enrollment_misc_fee),
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 1,
+          tuition_fee: this.formatData(this.quarterly[0].enrollment_tuition_fee - less_enrollment),
+          misc_fee: this.formatData(this.quarterly[0].enrollment_misc_fee),
+          due_date: this.formatDate(d.toString()),
+          total: this.formatData(this.quarterly[0].enrollment_tuition_fee - less_enrollment + this.quarterly[0].enrollment_misc_fee),
+          remarks: 'Enrollment Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 2,
+          tuition_fee: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.quarterly[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-10-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 3,
+          tuition_fee: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.quarterly[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-12-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 4,
+          tuition_fee: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.quarterly[0].monthly_misc_fee),
+          due_date: this.formatDate(parseInt(d.getFullYear() + 1) + '-02-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+      } else if (this.enrollment.payment_mode === 'MONTHLY'){
+        if (discount > 0) {
+          less_discount = this.formatData(this.semestral[0].total_tuition_fee * (discount / 100));
+          less = this.formatData(this.monthly[0].total_tuition_fee * (discount / 100) + less_reservation_fee);
+          less_monthly = this.formatData(this.monthly[0].monthly_tuition_fee * (discount / 100) + (less_reservation_fee / 9));
+          less_enrollment = this.formatData(this.monthly[0].enrollment_tuition_fee * (discount / 100) + (less_reservation_fee / 9));
+          if (less > this.monthly[0].total_tuition_fee) {
+            less = this.formatData(this.monthly[0].total_tuition_fee);
+            less_enrollment = this.formatData(this.monthly[0].enrollment_tuition_fee);
+          }
+        } else {
+          less = this.formatData(less_reservation_fee);
+          less_monthly = this.formatData((less_reservation_fee / 9));
+          less_enrollment = this.formatData((less_reservation_fee / 9));
+        }
+        this.enrollment.tuition.push({
+          type: 'MONTHLY',
+          months: '9',
+          reservation_fee: less_reservation_fee,
+          discount: less_discount,
+          total: this.formatData(this.monthly[0].total_tuition_fee - less + this.monthly[0].total_misc_fee),
+          total_tuition_fee: this.formatData(this.monthly[0].total_tuition_fee - less),
+          total_misc_fee: this.formatData(this.monthly[0].total_misc_fee),
+          monthly_tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          monthly_misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          enrollment_tuition_fee: this.formatData(this.monthly[0].enrollment_tuition_fee - less_enrollment),
+          enrollment_misc_fee: this.formatData(this.monthly[0].enrollment_misc_fee),
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 1,
+          tuition_fee: this.formatData(this.monthly[0].enrollment_tuition_fee - less_enrollment),
+          misc_fee: this.formatData(this.monthly[0].enrollment_misc_fee),
+          due_date: this.formatDate(d.toString()),
+          total: this.formatData(this.quarterly[0].enrollment_tuition_fee - less_enrollment + this.quarterly[0].enrollment_misc_fee),
+          remarks: 'Enrollment Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 2,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-09-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 3,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-10-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 4,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-11-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 5,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(d.getFullYear() + '-12-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 6,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(parseInt(d.getFullYear() + 1) + '-01-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 7,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(parseInt(d.getFullYear() + 1) + '-02-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 8,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(parseInt(d.getFullYear() + 1) + '-03-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+        this.enrollment.payment_schedule.push({
+          payment_no: 9,
+          tuition_fee: this.formatData(this.monthly[0].monthly_tuition_fee - less_monthly),
+          misc_fee: this.formatData(this.monthly[0].monthly_misc_fee),
+          due_date: this.formatDate(parseInt(d.getFullYear() + 1) + '-04-15'),
+          total: this.formatData(this.quarterly[0].monthly_tuition_fee - less_monthly + this.quarterly[0].monthly_misc_fee),
+          remarks: 'Monthly Payment',
+        });
+      }
+    },
     async askReservation(data, text) {
       if (this.enrollment.school_year_id === '' || this.enrollment.school_year_id === undefined){
         return false;
@@ -963,7 +1388,7 @@ export default {
             cancelButtonText: 'No, I don\'t have a reservation',
           }).then(({ value }) => {
             this.reservation_code = value;
-            this.searchReservation();
+            this.searchReservation().then(this.getTuition.bind(null, 'text'));
           }).catch(() => {
             // do nothing
           });
@@ -979,14 +1404,14 @@ export default {
       const { data } = await reservationResource.list({
         reservation_code: this.reservation_code,
       });
-      this.student_reservation = data[0];
-      var temp_reservation = false;
       if (data.length > 0){
+        this.student_reservation = data[0];
+        var temp_reservation = false;
         temp_reservation = true;
         this.hasReservation = true;
-        console.log('reservation');
         console.log(this.student_reservation);
         this.enrollment = {
+          reservation_id: this.student_reservation.id,
           student_id: this.student_reservation.student.id,
           student_no: this.student_reservation.student.student_no,
           first_name: this.student_reservation.student.first_name,
@@ -997,14 +1422,86 @@ export default {
           department: this.student_reservation.department_id,
           grade: this.student_reservation.grade_id,
           section: this.student_reservation.section_id,
+          reservation_date: this.student_reservation.date_reserve,
+          discount: 'NONE',
+          percent: 0,
           fee: '',
+          payment_mode: '',
+          remarks: '',
+          tuition: [],
+          payment_schedule: [],
           school_year_id: this.student_reservation.school_year_id,
           student_type: this.student_reservation.type === 'OLD' ? 'Old Student' : 'New Student',
+          type: this.student_reservation.type,
           with_reservation: temp_reservation,
         };
         this.filterSection();
       } else {
+        this.$message({
+          message: 'Reservation ' + this.reservation_code + ' not found.',
+          type: 'error',
+        });
         this.hasReservation = false;
+      }
+    },
+    async getTuition(){
+      if (this.hasReservation === true) {
+        const { data } = await schoolYearResource.list({
+          enrollment_fees: true,
+          school_year_id: this.enrollment.school_year_id,
+          department: this.enrollment.department,
+        });
+        if (data.length > 0){
+          this.annual.push({
+            type: 'ANNUAL',
+            months: '1',
+            total: data[0].annual[0].total_tuition_fee + data[0].annual[0].total_misc_fee,
+            total_tuition_fee: data[0].annual[0].total_tuition_fee,
+            total_misc_fee: data[0].annual[0].total_misc_fee,
+            monthly_tuition_fee: data[0].annual[0].monthly_tuition_fee,
+            monthly_misc_fee: data[0].annual[0].monthly_misc_fee,
+            enrollment_tuition_fee: data[0].annual[0].enrollment_tuition_fee,
+            enrollment_misc_fee: data[0].annual[0].enrollment_misc_fee,
+          });
+          this.semestral.push({
+            type: 'SEMESTRAL',
+            months: '2',
+            total: data[0].semestral[0].total_tuition_fee + data[0].semestral[0].total_misc_fee,
+            total_tuition_fee: data[0].semestral[0].total_tuition_fee,
+            total_misc_fee: data[0].semestral[0].total_misc_fee,
+            monthly_tuition_fee: data[0].semestral[0].monthly_tuition_fee,
+            monthly_misc_fee: data[0].semestral[0].monthly_misc_fee,
+            enrollment_tuition_fee: data[0].semestral[0].enrollment_tuition_fee,
+            enrollment_misc_fee: data[0].semestral[0].enrollment_misc_fee,
+          });
+          this.quarterly.push({
+            type: 'QUARTERLY',
+            months: '4',
+            total: data[0].quarterly[0].total_tuition_fee + data[0].quarterly[0].total_misc_fee,
+            total_tuition_fee: data[0].quarterly[0].total_tuition_fee,
+            total_misc_fee: data[0].quarterly[0].total_misc_fee,
+            monthly_tuition_fee: data[0].quarterly[0].monthly_tuition_fee,
+            monthly_misc_fee: data[0].quarterly[0].monthly_misc_fee,
+            enrollment_tuition_fee: data[0].quarterly[0].enrollment_tuition_fee,
+            enrollment_misc_fee: data[0].quarterly[0].enrollment_misc_fee,
+          });
+          this.monthly.push({
+            type: 'MONTHLY',
+            months: '9',
+            total: data[0].monthly[0].total_tuition_fee + data[0].monthly[0].total_misc_fee,
+            total_tuition_fee: data[0].monthly[0].total_tuition_fee,
+            total_misc_fee: data[0].monthly[0].total_misc_fee,
+            monthly_tuition_fee: data[0].monthly[0].monthly_tuition_fee,
+            monthly_misc_fee: data[0].monthly[0].monthly_misc_fee,
+            enrollment_tuition_fee: data[0].monthly[0].enrollment_tuition_fee,
+            enrollment_misc_fee: data[0].monthly[0].enrollment_misc_fee,
+          });
+        } else {
+          this.$message({
+            message: 'Tuition not found.',
+            type: 'error',
+          });
+        }
       }
     },
     enterReservation(){
@@ -1114,10 +1611,9 @@ export default {
       this.sections = data;
     },
     /* old methods */
-    async checkDuplicateReservation() {
-      const { data } = await reservationResource.list({
-        student_no: this.enrollment.student_no,
-        student_id: this.enrollment.id,
+    async checkDuplicateEnrollment() {
+      const { data } = await enrollmentResource.list({
+        student_no: this.enrollment.student_no, student_id: this.enrollment.student_id, school_year_id: this.enrollment.school_year_id,
       });
       if (data.length > 0) {
         return true;
@@ -1157,7 +1653,7 @@ export default {
                 }
               )
                 .then(() => {
-                  reservationResource
+                  enrollmentResource
                     .store(this.enrollment)
                     .then((response) => {
                       this.$message({
@@ -1194,7 +1690,7 @@ export default {
                 }
               )
                 .then(() => {
-                  reservationResource
+                  enrollmentResource
                     .update(this.enrollment.id, this.enrollment)
                     .then((response) => {
                       this.$message({
@@ -1231,7 +1727,8 @@ export default {
     confirmation() {
       if (
         this.enrollment.student_no === '' &&
-        this.enrollment.student_type === 'Old Student'
+        this.enrollment.student_type === 'Old Student' &&
+        this.hasReservation === false
       ) {
         this.$message({
           message: 'Student number is required.',
@@ -1239,7 +1736,7 @@ export default {
         });
         return;
       } else {
-        this.checkDuplicateReservation().then(this.doWork.bind(null, 'text'));
+        this.checkDuplicateEnrollment().then(this.doWork.bind(null, 'text'));
       }
     },
     // cancel checker
