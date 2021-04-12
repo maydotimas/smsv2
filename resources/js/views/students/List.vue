@@ -4,7 +4,7 @@
       <el-input
         v-model="listQuery.title"
         :placeholder="$t('table.student_search')"
-        style="width: 400px;"
+        style="width: 300px;"
         class="filter-item"
         @keyup.enter.native="getList"
       />
