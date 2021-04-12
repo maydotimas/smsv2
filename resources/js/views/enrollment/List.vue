@@ -288,7 +288,7 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: 'Delete canceled',
+            message: 'Delete cancelled',
           });
         });
     },

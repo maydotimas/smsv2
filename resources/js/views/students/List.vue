@@ -4,7 +4,7 @@
       <el-input
         v-model="listQuery.title"
         :placeholder="$t('table.student_search')"
-        style="width: 200px;"
+        style="width: 400px;"
         class="filter-item"
         @keyup.enter.native="getList"
       />
@@ -249,7 +249,7 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: 'Delete canceled',
+            message: 'Delete cancelled',
           });
         });
     },

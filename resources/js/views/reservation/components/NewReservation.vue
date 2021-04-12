@@ -798,7 +798,7 @@ export default {
                 .catch(() => {
                   this.$message({
                     type: 'info',
-                    message: 'Update canceled',
+                    message: 'Update cancelled',
                   });
                 });
             }

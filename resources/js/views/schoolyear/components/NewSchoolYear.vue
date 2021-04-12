@@ -1087,7 +1087,7 @@ export default {
                 .catch(() => {
                   this.$message({
                     type: 'info',
-                    message: 'Create canceled',
+                    message: 'Create cancelled',
                   });
                 });
             } else {
@@ -1124,7 +1124,7 @@ export default {
                 .catch(() => {
                   this.$message({
                     type: 'info',
-                    message: 'Update canceled',
+                    message: 'Update cancelled',
                   });
                 });
             }
