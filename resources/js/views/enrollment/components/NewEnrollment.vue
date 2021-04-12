@@ -573,21 +573,21 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                      <el-form-item
-                        label-width="120px"
-                        label="Remarks"
-                        prop="remarks"
-                      >
-                        <el-input
-                          v-model="enrollment.remarks"
-                          type="textarea"
-                          name="remarks"
-                          maxlength="500"
-                          minlength="5"
-                          placeholder="Remarks"
-                        />
-                      </el-form-item>
-                    </el-col>
+                    <el-form-item
+                      label-width="120px"
+                      label="Remarks"
+                      prop="remarks"
+                    >
+                      <el-input
+                        v-model="enrollment.remarks"
+                        type="textarea"
+                        name="remarks"
+                        maxlength="500"
+                        minlength="5"
+                        placeholder="Remarks"
+                      />
+                    </el-form-item>
+                  </el-col>
                   <el-col :span="8">
                     <el-form-item
                       label-width="120px"

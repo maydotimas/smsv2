@@ -67,6 +67,10 @@ class UserController extends BaseController
      */
     public function store(Request $request)
     {
+        $messages = [
+            'email.required' => 'Email address is required.',
+            'email.unique' => 'Email is already taken.'
+        ];
         $validator = Validator::make(
             $request->all(),
             array_merge(
@@ -75,11 +79,19 @@ class UserController extends BaseController
                     'password' => ['required', 'min:6'],
                     'confirmPassword' => 'same:password',
                 ]
-            )
+            ),
+            $messages,
+            [
+                'name' => 'Name',
+                'email' => 'Email Address',
+                'role' => 'User Role',
+            ]
+
         );
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 403);
+            $error = Arr::first(Arr::flatten($validator->messages()->get('*')));
+            return response()->json(['errors' => $error], 403);
         } else {
             $params = $request->all();
             $token = Hash::make($params['email']);
