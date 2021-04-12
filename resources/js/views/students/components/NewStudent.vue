@@ -146,7 +146,7 @@
                     <el-col :span="8">
                       <el-form-item
                         label-width="120px"
-                        label="Nick Name"
+                        label="Nickname"
                         class="postInfo-container-item"
                         prop="nickname"
                       >
@@ -154,7 +154,7 @@
                           v-model="student.nickname"
                           name="nickname"
                           maxlength="50"
-                          placeholder="Student's Nick Name"
+                          placeholder="Student's Nickname"
                         />
                       </el-form-item>
                     </el-col>

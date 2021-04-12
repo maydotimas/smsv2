@@ -128,7 +128,7 @@
                     <el-col :span="12">
                       <el-form-item
                         label-width="120px"
-                        label="Nick Name:"
+                        label="Nickname:"
                         class="postInfo-container-item"
                       />
                       <el-form-item
@@ -350,7 +350,7 @@
                     <el-col :span="12">
                       <el-form-item
                         label-width="120px"
-                        label="Nick Name:"
+                        label="Nickname:"
                         class="postInfo-container-item"
                       />
                       <el-form-item
