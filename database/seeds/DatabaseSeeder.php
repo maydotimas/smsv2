@@ -277,6 +277,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ReservationPermission::class);
         $this->call(GradePermission::class);
         $this->call(SectionPermission::class);
+        $this->call(EnrollmentPermission::class);
 
     }
 }

@@ -170,7 +170,7 @@ export default {
   tagsView: {
     refresh: 'Refresh',
     close: 'Close',
-    closeOthers: 'Close Others',
+    closeOthers: 'Close Other Tabs',
     closeAll: 'Close All',
   },
   user: {
