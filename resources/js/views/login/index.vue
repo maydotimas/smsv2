@@ -60,7 +60,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">
+          <el-button @click="resetNewUser()">
             {{ $t('table.cancel') }}
           </el-button>
           <el-button type="primary" @click="createUser()">
@@ -190,13 +190,15 @@ export default {
       }, {});
     },
     resetNewUser() {
+      this.dialogFormVisible = false;
       this.newUser = {
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
-        role: 'user',
+        role: '',
       };
+      this.$refs['userForm'].resetFields();
     },
     createUser() {
       this.$refs['userForm'].validate((valid) => {
