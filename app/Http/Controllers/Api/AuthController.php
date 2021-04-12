@@ -29,7 +29,7 @@ class AuthController extends BaseController
     {
         $credentials = $request->only('email', 'password');
         if (!Auth::attempt($credentials)) {
-            return response()->json(new JsonResponse([], 'Login failed.'), Response::HTTP_UNAUTHORIZED);
+            return response()->json(new JsonResponse([], 'Login failed. Incorrect Email or Password.'), Response::HTTP_UNAUTHORIZED);
         }
 
         $user = $request->user();

@@ -21,7 +21,7 @@
             :type="pwdType"
             name="password"
             auto-complete="on"
-            placeholder="password"
+            placeholder="Password"
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
@@ -34,8 +34,7 @@
           </el-button>
         </el-form-item>
         <div class="tips">
-          <a href="#" @click="dialogFormVisible = true">Register</a>
-          <span>Password: laravue</span>
+          Not yet registered? <a href="#" @click="dialogFormVisible = true">Register here.</a>
         </div>
       </el-form>
     </div>
@@ -94,14 +93,14 @@ export default {
     };
     const validateEmail = (rule, value, callback) => {
       if (!validEmail(value)) {
-        callback(new Error('Please enter the correct email'));
+        callback(new Error('Please enter your email'));
       } else {
         callback();
       }
     };
     const validatePass = (rule, value, callback) => {
-      if (value.length < 4) {
-        callback(new Error('Password cannot be less than 4 digits'));
+      if (value.length === 0){
+        callback(new Error('Please enter your password'));
       } else {
         callback();
       }
@@ -133,7 +132,7 @@ export default {
         name: [{ required: true, message: 'Name is required', trigger: 'blur' }],
         email: [
           { required: true, message: 'Email is required', trigger: 'blur' },
-          { type: 'email', message: 'Please input correct email address', trigger: ['blur', 'change'] },
+          { type: 'email', message: 'Please enter your email address', trigger: ['blur', 'change'] },
         ],
         password: [{ required: true, message: 'Password is required', trigger: 'blur' }],
         confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }],
