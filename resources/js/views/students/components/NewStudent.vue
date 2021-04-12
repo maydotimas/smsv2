@@ -933,6 +933,25 @@ export default {
         callback();
       }
     };
+    const validateNames = (rule, value, callback) => {
+      const regex = new RegExp(/^((?:[A-Z](?:('|(?:[a-z]{1,3}))[A-Z])?[a-z]+)|(?:[A-Z]\.))(?:([ -])((?:[A-Z](?:('|(?:[a-z]{1,3}))[A-Z])?[a-z]+)|(?:[A-Z]\.)))?$/);
+      var field = '';
+      if (rule.field === 'first_name') {
+        field = 'First Name';
+      } else if (rule.field === 'last_name') {
+        field = 'First Name';
+      }
+
+      if (value.length === 0) {
+        callback(new Error(field + ' is required'));
+      }
+
+      if (!regex.test(value)) {
+        callback(new Error('Invalid format for ' + field));
+      } else {
+        callback();
+      }
+    };
     return {
       formTitle: 'Confirm Student Details',
       hasStudentNoError: false,
@@ -959,6 +978,7 @@ export default {
             message: 'First Name is required.',
             trigger: 'change',
           },
+          { required: true, validator: validateNames, trigger: 'blur' },
           // { min: 3, max: 5, message: 'First Name should be at l', trigger: 'blur' }
         ],
         middle_name: [{ min: 1, max: 50, trigger: 'change' }],
@@ -968,6 +988,7 @@ export default {
             message: 'Last Name is required.',
             trigger: 'change',
           },
+          { required: true, validator: validateNames, trigger: 'blur' },
         ],
         lrn: [
           { required: true, message: 'LRN is required.', trigger: 'change' },
