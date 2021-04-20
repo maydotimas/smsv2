@@ -659,7 +659,7 @@
                       />
                     </el-form-item>
                   </el-col>
-                  <el-col :span="8">
+                  <el-col :span="16">
                     <el-form-item
                       label-width="120px"
                       label="Relationship"
@@ -832,52 +832,52 @@ export default {
         field = 'Student Number';
         type = 'Student';
       } else if (rule.field === 'father_first_name') {
-        field = "Father's First Name";
+        field = 'First Name';
         type = 'Father';
       } else if (rule.field === 'father_last_name') {
-        field = "Father's Last Name";
+        field = 'Last Name';
         type = 'Father';
       } else if (rule.field === 'father_address') {
-        field = "Father's Address";
+        field = 'Address';
         type = 'Father';
       } else if (rule.field === 'father_email') {
-        field = "Father's Email";
+        field = 'Email';
         type = 'Father';
       } else if (rule.field === 'father_mobile') {
-        field = "Father's Mobile";
+        field = 'Mobile';
         type = 'Father';
       } else if (rule.field === 'mother_first_name') {
-        field = "Mother's First Name";
+        field = 'First Name';
         type = 'Mother';
       } else if (rule.field === 'mother_last_name') {
-        field = "Mother's Last Name";
+        field = 'Last Name';
         type = 'Mother';
       } else if (rule.field === 'mother_address') {
-        field = "Mother's Address";
+        field = 'Address';
         type = 'Mother';
       } else if (rule.field === 'mother_email') {
-        field = "Mother's Email";
+        field = 'Email';
         type = 'Mother';
       } else if (rule.field === 'mother_mobile') {
-        field = "Mother's Mobile";
+        field = 'Mobile';
         type = 'Mother';
       } else if (rule.field === 'guardian_first_name') {
-        field = "Guardian's First Name";
+        field = 'First Name';
         type = 'Guardian';
       } else if (rule.field === 'guardian_last_name') {
-        field = "Guardian's Last Name";
+        field = 'Last Name';
         type = 'Guardian';
       } else if (rule.field === 'guardian_address') {
-        field = "Guardian's Address";
+        field = 'Address';
         type = 'Guardian';
       } else if (rule.field === 'guardian_email') {
-        field = "Guardian's Email";
+        field = 'Email';
         type = 'Guardian';
       } else if (rule.field === 'guardian_mobile') {
-        field = "Guardian's Mobile";
+        field = 'Mobile';
         type = 'Guardian';
       } else if (rule.field === 'relationship') {
-        field = "Guardian's Relationship";
+        field = 'Relationship';
         type = 'Guardian';
       } else {
         field = rule.field;
@@ -900,7 +900,7 @@ export default {
             ) {
               const regex = new RegExp(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/);
               if (!regex.test(value)) {
-                callback(new Error(field + ' has invalid email format.'));
+                callback(new Error('Invalid ' + field.toLowerCase() + ' format.'));
               }
             } else if (
               rule.field === 'guardian_address' ||
@@ -909,7 +909,7 @@ export default {
             ) {
               const regex = new RegExp(/^[\w\-\s]+$/);
               if (!regex.test(value)) {
-                callback(new Error(field + ' has invalid address format.'));
+                callback(new Error('Invalid ' + field.toLowerCase() + ' format.'));
               }
             } else if (
               rule.field === 'father_mobile' ||
@@ -918,7 +918,7 @@ export default {
             ) {
               const regex = new RegExp(/^(09|\+639)\d{9}$/);
               if (!regex.test(value)) {
-                callback(new Error(field + ' has invalid mobile format.'));
+                callback(new Error('Invalid ' + field.toLowerCase() + ' format.'));
               }
             }
           }
@@ -926,9 +926,14 @@ export default {
         }
       } else {
         if (type === 'Student') {
-          this.checkDuplicateStudentNo().then(
-            this.validateStudentNo.bind(null, callback)
-          );
+          const regex = new RegExp(/[0-9]{4}-[0-9]{7}$/);
+          if (regex.test(value)) {
+            callback(new Error('Invalid ' + field.toLowerCase() + ' format.'));
+          } else {
+            this.checkDuplicateStudentNo().then(
+              this.validateStudentNo.bind(null, callback)
+            );
+          }
         }
         callback();
       }
@@ -939,13 +944,11 @@ export default {
       if (rule.field === 'first_name') {
         field = 'First Name';
       } else if (rule.field === 'last_name') {
-        field = 'First Name';
+        field = 'Last Name';
       }
-
       if (value.length === 0) {
         callback(new Error(field + ' is required'));
       }
-
       if (!regex.test(value)) {
         callback(new Error('Invalid format for ' + field));
       } else {
@@ -1026,7 +1029,7 @@ export default {
         email: [
           {
             required: true,
-            message: 'Please input activity form',
+            message: 'Email is required',
             trigger: 'blur',
           },
           {
@@ -1082,7 +1085,7 @@ export default {
         father_email: [
           { required: true, validator: validateRequire, trigger: 'blur' },
         ],
-        father_mobile: [{ validator: validateRequire, trigger: 'blur' }],
+        father_mobile: [{ required: true, validator: validateRequire, trigger: 'blur' }],
         mother_first_name: [
           { required: true, validator: validateRequire, trigger: 'blur' },
         ],
@@ -1095,7 +1098,7 @@ export default {
         mother_email: [
           { required: true, validator: validateRequire, trigger: 'blur' },
         ],
-        mother_mobile: [{ validator: validateRequire, trigger: 'blur' }],
+        mother_mobile: [{ required: true, validator: validateRequire, trigger: 'blur' }],
         guardian_first_name: [
           { required: true, validator: validateRequire, trigger: 'blur' },
         ],
@@ -1111,7 +1114,9 @@ export default {
         guardian_email: [
           { required: true, validator: validateRequire, trigger: 'blur' },
         ],
-        guardian_mobile: [{ validator: validateRequire, trigger: 'blur' }],
+        guardian_mobile: [
+          { required: true, validator: validateRequire, trigger: 'blur' },
+        ],
       },
     };
   },
@@ -1154,7 +1159,7 @@ export default {
             if (this.isEdit === false && this.created === false){
               this.$confirm(
                 'Do you want to create ' + this.student.first_name + "'s record?",
-                'Confirm Save Student Details',
+                'Confirm Student Details',
                 {
                   confirmButtonText: 'OK',
                   cancelButtonText: 'Cancel',

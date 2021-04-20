@@ -80,14 +80,12 @@ class StudentController extends BaseController
         $validator = Validator::make(
             $request->all(),
             [
-                'student_no' => ['required', 'unique:students'],
                 'lrn' => ['unique:students'],
                 'first_name' => ['required'],
                 'last_name' => ['required'],
                 'gender' => ['required'],
                 'birthdate' => ['required'],
                 'handedness' => ['required'],
-                'religion' => ['required'],
                 'mobile' => ['required'],
                 'address' => ['required'],
                 'emergency' => ['required'],
@@ -221,14 +219,12 @@ class StudentController extends BaseController
         $validator = Validator::make(
             $request->all(),
             [
-                'student_no' => 'required | unique:students,student_no,' . $params['id'],
                 'lrn' => 'unique:students,lrn,' . $params['id'],
                 'first_name' => ['required'],
                 'last_name' => ['required'],
                 'gender' => ['required'],
                 'birthdate' => ['required'],
                 'handedness' => ['required'],
-                'religion' => ['required'],
                 'mobile' => ['required'],
                 'address' => ['required'],
                 'emergency' => ['required'],
@@ -237,14 +233,13 @@ class StudentController extends BaseController
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 403);
         } else {
-
             $family = $params['family'];
             $father = null;
             $mother = null;
             $guardian = null;
             // create parents
             if (in_array('Father', $family)) {
-                $father = StudentParent::where('id', '=', $request->father_id)
+                $father = StudentParent::where('id', '=', $student->father_id)
                     ->update([
                         'first_name' => $params['father_first_name'],
                         'middle_name' => $params['father_middle_name'],
@@ -255,12 +250,12 @@ class StudentController extends BaseController
                         'occupation' => $params['father_occupation'],
                         'type' => 'Father',
                     ]);
-                $father_id = $request->father_id;
+                $father_id = $student->father_id;
             } else {
                 $father_id = null;
             }
             if (in_array('Mother', $family)) {
-                $mother = StudentParent::where('id', '=', $request->mother_id)
+                $mother = StudentParent::where('id', '=', $student->mother_id)
                     ->update([
                         'first_name' => $params['mother_first_name'],
                         'middle_name' => $params['mother_middle_name'],
@@ -271,12 +266,12 @@ class StudentController extends BaseController
                         'occupation' => $params['mother_occupation'],
                         'type' => 'Mother',
                     ]);
-                $mother_id = $request->mother_id;
+                $mother_id = $student->mother_id;
             } else {
                 $mother_id = null;
             }
             if (in_array('Guardian', $family)) {
-                $guardian = StudentParent::where('id', '=', $request->guardian_id)
+                $guardian = StudentParent::where('id', '=', $student->guardian_id)
                     ->update([
                         'first_name' => $params['guardian_first_name'],
                         'middle_name' => $params['guardian_middle_name'],
@@ -287,7 +282,7 @@ class StudentController extends BaseController
                         'occupation' => $params['guardian_occupation'],
                         'type' => $params['relationship'],
                     ]);
-                $guardian_id = $request->guardian_id;
+                $guardian_id = $student->guardian_id;
             } else {
                 $guardian_id = null;
             }
