@@ -25,7 +25,7 @@ class CreateStudentsTable extends Migration
             $table->string('suffix')->nullable();
             $table->string('nickname')->nullable();
             $table->string('handedness');
-            $table->string('religion');
+            $table->string('religion')->nullable();
             $table->string('address')->nullable();
             $table->string('street')->nullable();
             $table->string('brgy')->nullable();
