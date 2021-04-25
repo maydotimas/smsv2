@@ -21,7 +21,8 @@ class SchoolYear extends Model
 
     public function scopeSearch($query,$keyword){
         return $query->where('name','like','%'.$keyword.'%')
-            ->orWhere('description','like','%'.$keyword.'%');
+            ->orWhere('description','like','%'.$keyword.'%')
+            ->orWhere('year','like','%'.$keyword.'%');
     }
     public function scopeActive($query,$keyword){
         return $query->where('status','=',$keyword);

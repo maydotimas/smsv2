@@ -6,7 +6,8 @@
         :placeholder="$t('table.school_year_search')"
         style="width: 200px;"
         class="filter-item"
-        @keyup.enter.native="getList"
+        @change="getList"
+        @blur="getList"
       />
       <el-select v-model="listQuery.type" :placeholder="$t('table.school_year_status')" clearable style="width: 200px" class="filter-item">
         <el-option v-for="item in schoolYearStatus" :key="item" :label="item" :value="item" />

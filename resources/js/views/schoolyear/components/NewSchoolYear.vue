@@ -54,7 +54,7 @@
                 </el-form-item>
                 <div class="postInfo-container">
                   <el-row>
-                    <el-col :span="8">
+                    <el-col :span="24">
                       <el-form-item
                         label-width="120px"
                         label="School Year"
@@ -66,6 +66,8 @@
                           placeholder="Select Year"
                           @change="filterDates"
                         >
+                          <el-option label="2018" value="2018" />
+                          <el-option label="2019" value="2019" />
                           <el-option label="2020" value="2020" />
                           <el-option label="2021" value="2021" />
                           <el-option label="2022" value="2022" />
@@ -85,7 +87,7 @@
                         </el-select>
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="12">
                       <el-form-item
                         label-width="120px"
                         label="Start"
@@ -105,7 +107,7 @@
                         />
                       </el-form-item>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="12">
                       <el-form-item
                         label-width="120px"
                         label="End"
