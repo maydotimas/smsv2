@@ -1050,8 +1050,8 @@ export default {
         this.hasDuplicate = false;
         this.$refs.postForm.validate((valid) => {
           if (valid) {
-            alert(this.isEdit);
-            alert(this.created);
+            // alert(this.isEdit);
+            // alert(this.created);
             if (this.isEdit === false && this.created === false){
               this.$confirm(
                 'Do you want to create ' + this.schoolyear.year + "'s record?",

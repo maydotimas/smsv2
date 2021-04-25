@@ -138,8 +138,8 @@ class SchoolYearController extends BaseController
         $validator = Validator::make(
             $request->all(),
             [
-                'year' => ['required', 'unique:school_years,year'],
-                'name' => ['required','unique:school_years,name'],
+                'year' => ['required', 'unique:school_years,year,NULL,id,deleted_at,NULL'],
+                'name' => ['required','unique:school_years,name,NULL,id,deleted_at,NULL'],
                 'description' => ['required'],
                 'start' => ['required'],
                 'end' => ['required'],
@@ -253,8 +253,8 @@ class SchoolYearController extends BaseController
         $validator = Validator::make(
             $request->all(),
             [
-                'year' => ['required', 'unique:school_years,year,'.$request->id],
-                'name' => ['required','unique:school_years,name,'.$request->id],
+                'year' => ['required', 'unique:school_years,year,'.$request->id.',id,deleted_at,NULL'],
+                'name' => ['required','unique:school_years,name,'.$request->id.',id,deleted_at,NULL'],
                 'description' => ['required'],
                 'start' => ['required'],
                 'end' => ['required'],
